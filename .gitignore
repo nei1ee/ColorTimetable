@@ -1,0 +1,25 @@
+.DS_Store
+node_modules/
+unpackage/
+dist/
+
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.project
+.idea
+.hbuilderx
+# .vscode 目录 存放 HBuilderX 自带的代码块支持
+# .vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw*
