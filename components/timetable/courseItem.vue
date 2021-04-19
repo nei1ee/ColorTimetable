@@ -46,6 +46,12 @@
       parserCourseTitle: function(title) {
         return title.length > 12 ? title.substring(0, 12) : title
       },
+      /**
+       * 点击课程
+       * @param {Number} weekIndex 周几索引
+       * @param {Number} dayIndex 节次索引
+       * @param {Object} courseItemData 当前点击课程列表
+       */
       showModal: function(weekIndex, dayIndex, courseItemData = []) {
         console.log(weekIndex, dayIndex)
         let str = courseItemData.length ? '' : '暂无课程'

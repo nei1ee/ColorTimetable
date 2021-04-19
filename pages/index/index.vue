@@ -5,11 +5,13 @@
         @click="showTimetableWeek = !showTimetableWeek">{{showTimetableWeek ? '隐藏周选择' : '显示周选择'}}</button>
       <button type="default" size="mini" @click="colorArrayIndex=0">色卡1</button>
       <button type="default" size="mini" @click="colorArrayIndex=1">色卡2</button>
+      <button type="default" size="mini"
+        @click="bgImage?bgImage='':bgImage='https://cdn.jsdelivr.net/gh/zguolee/cloud_images/background1.jpeg'">背景</button>
     </view>
-    <timetable-week v-if="showTimetableWeek" :timetableList="timetableList" :currentWeekIndex="currentWeekIndex"
-      :originalWeekIndex="originalWeekIndex"></timetable-week>
-    <timetable-body :timetableList="timetableList" :startDay="startDay" :currentWeekIndex="currentWeekIndex"
-      :colorArrayIndex="colorArrayIndex">
+    <timetable-week v-if="showTimetableWeek" :timetableList="timetableList" :originalWeekIndex="originalWeekIndex"
+      :currentWeekIndex="currentWeekIndex"></timetable-week>
+    <timetable-body :bgImage="bgImage" :timetableList="timetableList" :startDay="startDay"
+      :originalWeekIndex="originalWeekIndex" :currentWeekIndex="currentWeekIndex" :colorArrayIndex="colorArrayIndex">
     </timetable-body>
   </view>
 </template>
@@ -36,7 +38,9 @@
         currentWeekIndex: 0,
         // 色卡索引
         colorArrayIndex: 0,
-        showTimetableWeek: false
+        showTimetableWeek: false,
+        // 背景图片
+        bgImage: ''
       }
     },
     components: {

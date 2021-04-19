@@ -1,5 +1,5 @@
 <template>
-  <view style="background-color: #FFFFFF;">
+  <view class="timetable-bg" :style="bgImageStyle">
     <!-- 课表时间头 -->
     <view class="timetable-header">
       <view class="timetable-header-left">
@@ -7,8 +7,8 @@
       </view>
       <view class="timetable-header-right">
         <text style="flex: 1;text-align: center;font-size: 24rpx;"
-          :class=" (thisDay === index + 1) ? 'text-orange text-bold' : '' " v-for="(item, index) in dayArray"
-          :key="index">{{ `周${weekTitle[index]}\n${item}` }}</text>
+          :class=" (originalWeekIndex === currentWeekIndex) && (thisDay === index + 1) ? 'text-orange text-bold' : '' "
+          v-for="(item, index) in dayArray" :key="index">{{ `周${weekTitle[index]}\n${item}` }}</text>
       </view>
     </view>
     <!-- 课表主体区域 -->
@@ -90,6 +90,10 @@
       courseItem
     },
     props: {
+      bgImage: {
+        type: String,
+        default: ''
+      },
       timetableList: {
         type: Array,
         default: []
@@ -97,6 +101,11 @@
       startDay: {
         type: String,
         default: '2021-03-01 00:00:00'
+      },
+      // 默认周
+      originalWeekIndex: {
+        type: Number,
+        default: -1
       },
       currentWeekIndex: {
         type: Number,
@@ -108,6 +117,14 @@
       }
     },
     computed: {
+      // 课程背景样式
+      bgImageStyle: function() {
+        let style = `background-color: #FFFFFF;`
+        if (this.bgImage) {
+          style = `${style}background-image:url(${this.bgImage});color:#FFFFFF;`
+        }
+        return style
+      },
       // 获取当前天周几
       thisDay: function() {
         return this.$timeUtils.getDay()
@@ -175,6 +192,12 @@
 
   .text-bold {
     font-weight: bold;
+  }
+  
+  .timetable-bg {
+    background-size: cover;
+    background-position: center center;
+    padding-bottom: 120rpx;
   }
 
   .timetable-header {

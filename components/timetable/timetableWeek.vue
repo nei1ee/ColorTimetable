@@ -1,6 +1,6 @@
 <template>
   <view style="background-color: #F1F1F1;">
-    <scroll-view class="week-choose-nav" scroll-x scroll-with-animation :scroll-left="50 * originalWeekIndex">
+    <scroll-view class="week-choose-nav" scroll-x scroll-with-animation :scroll-left="scrollLeft">
       <block v-for="(weekTimetable, weekIndex) in timetableList" :key="weekIndex">
         <view class="week-item"
           :class="originalWeekIndex === weekIndex ? 'original' : (currentWeekIndex === weekIndex? 'current' : '')"
@@ -12,7 +12,7 @@
             <view v-for="(dayTimetable, dayIndex) in weekTimetable" :key="dayIndex">
               <block v-for="(timeTimetable, timeIndex) in dayTimetable" :key="timeIndex">
                 <view style="padding: 2rpx;" v-if="dayIndex < 5">
-                  <view class="item-dot" :class="timeTimetable.length >= 1 ? 'false' : 'true'"></view>
+                  <view class="item-dot" :class="timeTimetable.length >= 1 ? 'true' : 'false'"></view>
                 </view>
               </block>
             </view>
@@ -45,6 +45,15 @@
         default: -1
       }
     },
+    computed: {
+      // 周切换移动动画
+      scrollLeft() {
+        if (this.originalWeekIndex === this.currentWeekIndex) {
+          return this.originalWeekIndex * 60
+        }
+        return this.currentWeekIndex * 60
+      }
+    },
     methods: {
       changeWeekIndex: function(weekIndex) {
         // 触发周索引变化
@@ -67,7 +76,7 @@
       display: inline-block;
 
       &.original {
-        background-color: #C8C7CC;
+        background-color: #D3D3D3;
       }
 
       &.current {
@@ -98,7 +107,7 @@
     }
 
     &.false {
-      background-color: #f98897;
+      background-color: #DCDCDC;
     }
   }
 </style>

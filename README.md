@@ -2,13 +2,7 @@
 
 ### 界面预览
 
-![](https://cdn.jsdelivr.net/gh/zguolee/cloud_images/timetable-image.jpeg)
-
-### 已实现
-
-- 仿超级课程表周数切换
-- 课程冲突显示
-- 周课表色卡切换
+![](https://cdn.jsdelivr.net/gh/zguolee/cloud_images/38560C2C-0A2C-435A-ABFB-312C803A7D3C_1_105_c.jpeg)
 
 ### 目录结构
 
@@ -164,4 +158,22 @@ app.$mount()
 </script>
 
 ```
+
+### 更新日志
+
+#### Version 1.0.1
+
+1. A 周课表背景
+2. U 更换周课表切换配色
+3. U 优化体验
+
+#### Version 1.0.0
+
+1. A 课程切换
+2. A 冲突课程折角
+3. A 周课表色卡切换
+
+## 开源许可
+
+本项目使用开源许可证 License GPLv3 ，代码开源仅供学习交流，禁止私用、商用，违者必究。
 
