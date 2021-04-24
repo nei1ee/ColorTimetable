@@ -1,14 +1,17 @@
 <template>
   <view class="timetable-bg" :style="bgImageStyle">
     <!-- 课表时间头 -->
-    <view class="timetable-header">
+    <view class="timetable-header" :style="!bgImage ? 'background-color:#FFFFFF' : ''">
       <view class="timetable-header-left">
         <text>{{ `${currentMonth}\n月` }}</text>
       </view>
       <view class="timetable-header-right">
-        <text style="flex: 1;text-align: center;font-size: 24rpx;"
-          :class=" (originalWeekIndex === currentWeekIndex) && (thisDay === index + 1) ? 'text-orange text-bold' : '' "
-          v-for="(item, index) in dayArray" :key="index">{{ `周${weekTitle[index]}\n${item}` }}</text>
+        <block v-for="(item, index) in dayArray" :key="index">
+          <text style="flex: 1;text-align: center;font-size: 24rpx;"
+            :class="(originalWeekIndex === currentWeekIndex) && (weekWeekIndex === index) ? 'text-orange text-bold' : '' ">
+            {{ `周${weekTitle[index]}\n${item}` }}
+          </text>
+        </block>
       </view>
     </view>
     <!-- 课表主体区域 -->
@@ -26,8 +29,22 @@
       <view class="timetable-body-right">
         <block v-for="(dayTimetable, weekIndex) in 7" :key="weekIndex">
           <block v-for="(dayItem, dayIndex) in 5" :key="dayIndex">
-            <course-item :courseItemData="weekTimetable[weekIndex][dayIndex]" :weekIndex="weekIndex"
-              :dayIndex="dayIndex"></course-item>
+            <view class="timetable-item" v-if="parserTimetable[weekIndex][dayIndex].length"
+              :style="'margin-left:' + (parserTimetable[weekIndex][dayIndex][0].week - 1) * 13.0 +'vw;margin-top:' +(parserTimetable[weekIndex][dayIndex][0].start - 1) * 120 + 'rpx;height:' + parserTimetable[weekIndex][dayIndex][0].duration * 120 + 'rpx;'">
+              <view class="timetable-item-content"
+                :style="parserTimetable[weekIndex][dayIndex].length > 1? 'height:' + (parserTimetable[weekIndex][dayIndex][0].duration * 120 - 6) + 'rpx;background: linear-gradient(to left top, transparent 50%, rgba(0, 0, 0, 0.2) 0) no-repeat 100% 100% / 1.0em 1.0em, linear-gradient(-45deg, transparent 0.7em,' + parserTimetable[weekIndex][dayIndex][0].color + ' 0);' : 'height:' + (parserTimetable[weekIndex][dayIndex][0].duration * 120 - 6) + 'rpx;background-color:' + parserTimetable[weekIndex][dayIndex][0].color + ';'">
+                <text>
+                  <text style="font-size: 24rpx;">
+                    {{ parserCourseTitle(parserTimetable[weekIndex][dayIndex][0].title) }}
+                  </text>
+                  {{ `\n@${parserTimetable[weekIndex][dayIndex][0].location}` }}
+                </text>
+              </view>
+            </view>
+            <view class="timetable-item" v-else style="z-index: 4;"
+              :style="'margin-left:' + weekIndex * 13.0 + 'vw;margin-top:' + dayIndex * 2 * 120 +'rpx;height: 240rpx;'">
+              <view class="timetable-item-content"></view>
+            </view>
           </block>
         </block>
       </view>
@@ -37,8 +54,9 @@
 
 <script>
   import {
-    courseItem
-  } from './courseItem.vue'
+    mapState,
+    mapGetters
+  } from 'vuex'
   export default {
     name: "timetableBody",
     data() {
@@ -86,37 +104,17 @@
         ]
       };
     },
-    components: {
-      courseItem
-    },
-    props: {
-      bgImage: {
-        type: String,
-        default: ''
-      },
-      timetableList: {
-        type: Array,
-        default: []
-      },
-      startDay: {
-        type: String,
-        default: '2021-03-01 00:00:00'
-      },
-      // 默认周
-      originalWeekIndex: {
-        type: Number,
-        default: -1
-      },
-      currentWeekIndex: {
-        type: Number,
-        default: -1
-      },
-      colorArrayIndex: {
-        type: Number,
-        default: 0
-      }
-    },
     computed: {
+      ...mapState([
+        'startDay',
+        'timetableList',
+        'colorArrayIndex',
+        'bgImage'
+      ]),
+      ...mapGetters([
+        'originalWeekIndex',
+        'currentWeekIndex'
+      ]),
       // 课程背景样式
       bgImageStyle: function() {
         let style = `background-color: #FFFFFF;`
@@ -126,8 +124,8 @@
         return style
       },
       // 获取当前天周几
-      thisDay: function() {
-        return this.$timeUtils.getDay()
+      weekWeekIndex: function() {
+        return this.$timeUtils.getWeekWeekIndex()
       },
       // 本周对应日期
       dayArray: function() {
@@ -144,7 +142,7 @@
         return dayArray
       },
       // 周课表颜色渲染
-      weekTimetable: function() {
+      parserTimetable: function() {
         const colorArray = this.colorArray[this.colorArrayIndex]
         const colorArrayLength = this.colorArray[this.colorArrayIndex].length
         const colorMap = new Map()
@@ -174,7 +172,16 @@
             }
           }
         }
+        console.log(weekTimetableTemp)
         return weekTimetableTemp
+      }
+    },
+    methods: {
+      parserCourseTitle: function(title) {
+        if (title) {
+          return title.length > 12 ? title.substring(0, 12) : title
+        }
+        return '空'
       }
     }
   }
@@ -193,7 +200,7 @@
   .text-bold {
     font-weight: bold;
   }
-  
+
   .timetable-bg {
     background-size: cover;
     background-position: center center;
@@ -221,7 +228,7 @@
       left: 0;
       top: 100%;
       border-style: solid;
-      border-width: 0 4.5vw 15rpx 4.5vw;
+      border-width: 0 4.55vw 16rpx 4.55vw;
       border-color: #ff907d #ff907d transparent #ff907d;
     }
 
@@ -254,6 +261,26 @@
       color: #FFFFFF;
       position: relative;
       font-size: 20rpx;
+    }
+  }
+
+  .timetable-item {
+    position: absolute;
+    width: 13.0vw;
+    padding: 3.0rpx;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &-content {
+      width: calc(13.0vw - 6rpx);
+      height: 100%;
+      border-radius: 10rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
     }
   }
 </style>

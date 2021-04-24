@@ -24,28 +24,22 @@
 </template>
 
 <script>
+  import {
+    mapState
+  } from 'vuex'
   export default {
     data() {
       return {}
     },
-    props: {
-      // 课表数据
-      timetableList: {
-        type: Array,
-        default: {}
-      },
-      // 当前周
-      currentWeekIndex: {
-        type: Number,
-        default: -1
-      },
-      // 默认周
-      originalWeekIndex: {
-        type: Number,
-        default: -1
-      }
-    },
     computed: {
+      ...mapState([
+        'startDay',
+        'timetableList',
+        'originalWeekIndex',
+        'currentWeekIndex',
+        'colorArrayIndex',
+        'bgImage'
+      ]),
       // 周切换移动动画
       scrollLeft() {
         if (this.originalWeekIndex === this.currentWeekIndex) {
@@ -76,7 +70,7 @@
       display: inline-block;
 
       &.original {
-        background-color: #D3D3D3;
+        background-color: #C8C7CC;
       }
 
       &.current {
@@ -93,6 +87,7 @@
         display: flex;
         width: 80rpx;
         margin: 0 20rpx;
+        justify-content: center;
       }
     }
   }

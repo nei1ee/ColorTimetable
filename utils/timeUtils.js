@@ -12,10 +12,10 @@ class timeUtils {
     return parseInt(this.dateMinus(whichDay) / 7)
   }
   // 获取当前天周几
-  getDay() {
+  getWeekWeekIndex() {
     const week = new Date().getDay()
-    if (week) return week
-    else return 7
+    if (week) return (week - 1)
+    else return 6
   }
   // 日期前加0
   formatNumber(n) {
