@@ -1,10 +1,10 @@
 <template>
-  <view style="background-color: #F1F1F1;">
+  <view style="background-color: #F1F1F1;" v-show="showTimetableWeek">
     <scroll-view class="week-choose-nav" scroll-x scroll-with-animation :scroll-left="scrollLeft">
       <block v-for="(weekTimetable, weekIndex) in timetableList" :key="weekIndex">
         <view class="week-item"
           :class="originalWeekIndex === weekIndex ? 'original' : (currentWeekIndex === weekIndex? 'current' : '')"
-          @click="changeWeekIndex(weekIndex)">
+          @click="$store.commit('timetable/setCurrentWeekIndex', weekIndex)">
           <view class="week-item-week">
             第{{ weekIndex + 1 }}周
           </view>
@@ -25,35 +25,31 @@
 
 <script>
   import {
-    mapState
+    mapState,
+    mapGetters
   } from 'vuex'
   export default {
     data() {
       return {}
     },
     computed: {
-      ...mapState([
-        'startDay',
+      ...mapState('timetable', [
         'timetableList',
+        'showTimetableWeek'
+      ]),
+      ...mapGetters('timetable', [
         'originalWeekIndex',
         'currentWeekIndex',
-        'colorArrayIndex',
-        'bgImage'
+        'weekWeekIndex'
       ]),
       // 周切换移动动画
       scrollLeft() {
-        if (this.originalWeekIndex === this.currentWeekIndex) {
-          return this.originalWeekIndex * 60
+        if (this.showTimetableWeek) {
+          if (this.originalWeekIndex === this.currentWeekIndex) {
+            return this.originalWeekIndex * 60
+          }
+          return this.currentWeekIndex * 60
         }
-        return this.currentWeekIndex * 60
-      }
-    },
-    methods: {
-      changeWeekIndex: function(weekIndex) {
-        // 触发周索引变化
-        uni.$emit('changeWeekIndex', {
-          newWeekIndex: weekIndex
-        })
       }
     }
   }

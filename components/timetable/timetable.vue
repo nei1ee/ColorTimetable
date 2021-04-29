@@ -1,6 +1,6 @@
 <template>
   <view>
-    <!-- <timetable-week v-if="showTimetableWeek"></timetable-week> -->
+    <timetable-week></timetable-week>
     <timetable-body></timetable-body>
     <!-- <view class="course-detail" v-if="showCourseDetail">
       <view class="mask" @click="showCourseDetail = !showCourseDetail"></view>
@@ -67,13 +67,12 @@
       // console.log(this.timetableList)
     },
     computed: {
-      ...mapState([
-        'startDay',
+      ...mapState('timetable', [
         'timetableList',
         'showTimetableWeek',
         'colorArrayIndex'
       ]),
-      ...mapGetters([
+      ...mapGetters('timetable', [
         'originalWeekIndex',
         'currentWeekIndex'
       ])

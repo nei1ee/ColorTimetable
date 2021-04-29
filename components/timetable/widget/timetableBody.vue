@@ -9,13 +9,13 @@
         <block v-for="(item, index) in dayArray" :key="index">
           <text style="flex: 1;text-align: center;font-size: 24rpx;"
             :class="(originalWeekIndex === currentWeekIndex) && (weekWeekIndex === index) ? 'text-orange text-bold' : '' ">
-            {{ `周${weekTitle[index]}\n${item}` }}
+            {{ `周${weekTitle[index]}\n${item}日` }}
           </text>
         </block>
       </view>
     </view>
     <!-- 课表主体区域 -->
-    <view class="timetable-body">
+    <view class="timetable-body" @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd">
       <!-- 课表左侧时间 -->
       <view class="timetable-body-left">
         <view class="timetable-body-left-time" v-for="(item, index) in 10" :key="index">
@@ -27,21 +27,21 @@
       </view>
       <!-- 课表主体区域 -->
       <view class="timetable-body-right">
-        <block v-for="(dayTimetable, weekIndex) in 7" :key="weekIndex">
-          <block v-for="(dayItem, dayIndex) in 5" :key="dayIndex">
-            <view class="timetable-item" v-if="parserTimetable[weekIndex][dayIndex].length"
-              :style="'margin-left:' + (parserTimetable[weekIndex][dayIndex][0].week - 1) * 13.0 +'vw;margin-top:' +(parserTimetable[weekIndex][dayIndex][0].start - 1) * 120 + 'rpx;height:' + parserTimetable[weekIndex][dayIndex][0].duration * 120 + 'rpx;'">
+        <block v-for="(dayTimetable, weekIndex) in parserTimetable" :key="weekIndex">
+          <block v-for="(dayItem, dayIndex) in dayTimetable" :key="dayIndex">
+            <view v-if="dayItem.length" class="timetable-item"
+              :style="'margin-left:' + (dayItem[0].week - 1) * 13.0 +'vw;margin-top:' +(dayItem[0].start - 1) * 120 + 'rpx;height:' + dayItem[0].duration * 120 + 'rpx;'">
               <view class="timetable-item-content"
-                :style="parserTimetable[weekIndex][dayIndex].length > 1? 'height:' + (parserTimetable[weekIndex][dayIndex][0].duration * 120 - 6) + 'rpx;background: linear-gradient(to left top, transparent 50%, rgba(0, 0, 0, 0.2) 0) no-repeat 100% 100% / 1.0em 1.0em, linear-gradient(-45deg, transparent 0.7em,' + parserTimetable[weekIndex][dayIndex][0].color + ' 0);' : 'height:' + (parserTimetable[weekIndex][dayIndex][0].duration * 120 - 6) + 'rpx;background-color:' + parserTimetable[weekIndex][dayIndex][0].color + ';'">
+                :style="dayItem.length > 1? 'height:' + (dayItem[0].duration * 120 - 6) + 'rpx;background: linear-gradient(to left top, transparent 50%, rgba(0, 0, 0, 0.2) 0) no-repeat 100% 100% / 1.0em 1.0em, linear-gradient(-45deg, transparent 0.7em,' + dayItem[0].color + ' 0);' : 'height:' + (dayItem[0].duration * 120 - 6) + 'rpx;background-color:' + dayItem[0].color + ';'">
                 <text>
                   <text style="font-size: 24rpx;">
-                    {{ parserCourseTitle(parserTimetable[weekIndex][dayIndex][0].title) }}
+                    {{ parserCourseTitle(dayItem[0].title) }}
                   </text>
-                  {{ `\n@${parserTimetable[weekIndex][dayIndex][0].location}` }}
+                  {{ `\n@${dayItem[0].location}` }}
                 </text>
               </view>
             </view>
-            <view class="timetable-item" v-else style="z-index: 4;"
+            <view v-else class="timetable-item blank"
               :style="'margin-left:' + weekIndex * 13.0 + 'vw;margin-top:' + dayIndex * 2 * 120 +'rpx;height: 240rpx;'">
               <view class="timetable-item-content"></view>
             </view>
@@ -61,8 +61,6 @@
     name: "timetableBody",
     data() {
       return {
-        // 当前月份
-        currentMonth: 2,
         weekTitle: ['一', '二', '三', '四', '五', '六', '日'],
         classTime: [{
           's': '08:00',
@@ -99,21 +97,32 @@
           'e': '21:40'
         }],
         colorArray: [
-          ['#ffc44e', '#ff9192', '#ff9dd6', '#d48cf9', '#aeec35', '#70eb54', '#95e8e9', '#86affe', '#a98fff'],
+          ['#99CCFF', '#FFCC99', '#FFCCCC', '#CC6699', '#99CCCC', '#FF6666', '#CCCC66', '#66CC99', '#FF9966',
+            '#66CCCC', '#6699CC', '#99CC99', '#669966', '#99CC99', '#99CCCC', '#66CCFF', '#CCCCFF', '#99CC66',
+            '#CCCC99', '#FF9999',
+          ],
+          ['#1fb49b', '#cf667d', '#139ad4', '#c19191', '#da95b7', '#a685c0', '#00bdaa', '#e29aad', '#81cc74',
+            '#e29e6a', '#7397db', '#c496c9', '#d3695b', '#a1d699',
+          ],
           ['#87d7eb', '#acd598', '#5ec876', '#fbc7cc', '#ce7cf4', '#bf66d3', '#ffdc72', '#ff9983', '#ff7171']
-        ]
+        ],
+        startX: 0,
+        towards: 0
       };
     },
     computed: {
-      ...mapState([
+      ...mapState('timetable', [
         'startDay',
         'timetableList',
         'colorArrayIndex',
         'bgImage'
       ]),
-      ...mapGetters([
+      ...mapGetters('timetable', [
         'originalWeekIndex',
-        'currentWeekIndex'
+        'currentWeekIndex',
+        'weekWeekIndex',
+        'currentMonth',
+        'dayArray'
       ]),
       // 课程背景样式
       bgImageStyle: function() {
@@ -122,24 +131,6 @@
           style = `${style}background-image:url(${this.bgImage});color:#FFFFFF;`
         }
         return style
-      },
-      // 获取当前天周几
-      weekWeekIndex: function() {
-        return this.$timeUtils.getWeekWeekIndex()
-      },
-      // 本周对应日期
-      dayArray: function() {
-        const weekIndex = this.currentWeekIndex
-        const dayArray = []
-        const myDate = new Date(this.startDay)
-        myDate.setDate(myDate.getDate() + weekIndex * 7)
-        this.currentMonth = myDate.getMonth() + 1
-        dayArray.push(this.$timeUtils.formatNumber(myDate.getDate()))
-        for (let i = 0; i < 6; i++) {
-          myDate.setDate(myDate.getDate() + 1)
-          dayArray.push(this.$timeUtils.formatNumber(myDate.getDate()))
-        }
-        return dayArray
       },
       // 周课表颜色渲染
       parserTimetable: function() {
@@ -172,16 +163,34 @@
             }
           }
         }
-        console.log(weekTimetableTemp)
         return weekTimetableTemp
       }
     },
     methods: {
       parserCourseTitle: function(title) {
-        if (title) {
-          return title.length > 12 ? title.substring(0, 12) : title
+        return title.length > 12 ? title.substring(0, 12) : title
+      },
+      touchStart(e) {
+        // console.log(e)
+        if (e.touches.length) {
+          this.startX = e.touches[0].clientX
         }
-        return '空'
+      },
+      touchMove(e) {
+        if (e.touches.length) {
+          const moveX = e.touches[0].clientX;
+          this.towards = this.startX - moveX;
+        }
+      },
+      touchEnd(e) {
+        let currentWeekIndexTemp = this.currentWeekIndex
+        const towards = this.towards
+        if (towards < -50) {
+          currentWeekIndexTemp++
+        } else if (towards > 50) {
+          currentWeekIndexTemp--
+        }
+        this.$store.commit('timetable/setCurrentWeekIndex', currentWeekIndexTemp)
       }
     }
   }
@@ -213,8 +222,8 @@
     height: 80rpx;
 
     &-left {
-      background-color: #ff907d;
-      color: #fff;
+      // background-color: #ff907d;
+      // color: #fff;
       width: 9vw;
       position: relative;
       text-align: center;
@@ -222,15 +231,15 @@
       height: 70rpx;
     }
 
-    &-left::after {
-      position: absolute;
-      content: '';
-      left: 0;
-      top: 100%;
-      border-style: solid;
-      border-width: 0 4.55vw 16rpx 4.55vw;
-      border-color: #ff907d #ff907d transparent #ff907d;
-    }
+    // &-left::after {
+    //   position: absolute;
+    //   content: '';
+    //   left: 0;
+    //   top: 100%;
+    //   border-style: solid;
+    //   border-width: 0 4.55vw 16rpx 4.55vw;
+    //   border-color: #ff907d #ff907d transparent #ff907d;
+    // }
 
     &-right {
       width: 92.6vw;
@@ -282,5 +291,9 @@
       justify-content: center;
       text-align: center;
     }
+  }
+
+  .timetable-item .blank {
+    z-index: 4;
   }
 </style>
