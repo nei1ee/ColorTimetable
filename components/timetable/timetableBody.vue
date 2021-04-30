@@ -36,7 +36,8 @@
         <block v-for="(dayTimetable, weekIndex) in parserTimetable" :key="weekIndex">
           <block v-for="(dayItem, dayIndex) in dayTimetable" :key="dayIndex">
             <view v-if="dayItem.length" class="timetable-item"
-              :style="'margin-left:' + (dayItem[0].week - 1) * 13.0 +'vw;margin-top:' +(dayItem[0].start - 1) * 120 + 'rpx;'">
+              :style="'margin-left:' + (dayItem[0].week - 1) * 13.0 +'vw;margin-top:' +(dayItem[0].start - 1) * 120 + 'rpx;'"
+              @click="showCourseDetail(dayItem)">
               <view class="timetable-item-content"
                 :style="'height:' + (dayItem[0].duration * 120 - 8) + 'rpx;background-color:' + dayItem[0].color + ';'">
                 <view v-if="dayItem.length > 1" class="twice-course"></view>
@@ -57,33 +58,34 @@
       </view>
     </view>
     <!-- 点击课表卡片 -->
-    <!-- <view class="course-detail" v-if="showCourseDetail">
-      <view class="mask" @click="showCourseDetail = !showCourseDetail"></view>
-      <swiper class="card-swiper">
-        <swiper-item class="card-swiper-item" v-for="(courseItem, courseIndex) in courseDetailData.courseItemData"
-          :key="courseIndex">
-          <view class="swiper-item">
-            <view class="swiper-body">
-              <view class="course-title">
-                {{ courseItem.title }}
-              </view>
-              <view class="course-other">
-                <view class="">
-                  地点：{{ courseItem.location ? courseItem.location : '无' }}
-                </view>
-                <view class="">
-                  教师：{{ courseItem.teacher ? courseItem.teacher : '无'}}
-                </view>
-                <view class="">
-                  时间：{{ courseItem.time ? courseItem.time : '无'}}
-                </view>
-              </view>
-            </view>
+    <view class="course-card" v-if="showCourseCard">
+      <view class="mask" @click="showCourseCard = !showCourseCard"></view>
+      <view class="course-item" v-for="(courseItem, courseItemIndex) in courseCardData" :key="courseItemIndex"
+        :style="'background-color:' + courseItem.color">
+        <view class="course-title">
+          {{ courseItem.title }}
+        </view>
+        <view class="course-other">
+          <view class="">
+            <text class="cuIcon-location"></text>{{ courseItem.location ? courseItem.location : '无' }}
           </view>
-        </swiper-item>
-      </swiper>
-    </view> -->
-
+          <view class="">
+            <text class="cuIcon-people"></text>{{ courseItem.teacher ? courseItem.teacher : '无'}}
+          </view>
+          <view class="">
+            <text class="cuIcon-time"></text>{{ courseItem.time ? courseItem.time : '无'}}
+          </view>
+        </view>
+        <view class="course-action">
+          <view v-if="courseItemIndex === 0" style="font-size: 32rpx;">已置顶</view>
+          <view v-else style="font-size: 32rpx;" @click="setCourseItemTop(courseItem, courseItemIndex)">
+            置顶
+          </view>
+          <view class="cuIcon-write"></view>
+          <view class="cuIcon-backdelete" @click="deleteCourseItem(courseItem, courseItemIndex)"></view>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -138,7 +140,10 @@
           ['#99CCFF', '#FFCC99', '#CCCCFF', '#99CCCC', '#A1D699', '#7397db', '#ff9983', '#87D7EB', '#99CC99']
         ],
         startX: 0,
-        towards: 0
+        towards: 0,
+        // 课表详情卡片
+        showCourseCard: false,
+        courseCardData: null
       };
     },
     computed: {
@@ -216,19 +221,85 @@
         const towards = this.towards
         if (towards !== 0) {
           if (towards < -50) {
-            currentWeekIndexTemp++
+            // 右滑，周索引--
+            if (currentWeekIndexTemp !== 0) {
+              currentWeekIndexTemp--
+            }
           } else if (towards > 50) {
-            currentWeekIndexTemp--
+            // 右滑，周索引++
+            if (currentWeekIndexTemp !== 19) {
+              currentWeekIndexTemp++
+            }
           }
           this.towards = 0
           this.$store.commit('timetable/setCurrentWeekIndex', currentWeekIndexTemp)
         }
-      }
+      },
+      /**
+       * 显示课程卡片
+       * @param {Object} dayItem 课程数据
+       */
+      showCourseDetail(dayItem) {
+        this.showCourseCard = true
+        this.courseCardData = dayItem
+      },
+      /**
+       * 设置置顶
+       * @param {Object} courseItem 置顶目标
+       * @param {Object} courseItemIndex 需要置顶课程的索引
+       */
+      setCourseItemTop(courseItem, courseItemIndex) {
+        const timetableListTemp = Array.from(this.timetableList)
+        const {
+          start,
+          week,
+          weeks
+        } = courseItem
+        for (let i = 0; i < weeks.length; i++) {
+          const dayDayCourse = timetableListTemp[weeks[i] - 1][week - 1][Number.parseInt(start / 2)]
+          if (timetableListTemp[weeks[i] - 1][week - 1][Number.parseInt(start / 2)].length > 1) {
+            const temp = timetableListTemp[weeks[i] - 1][week - 1][Number.parseInt(start / 2)][courseItemIndex]
+            timetableListTemp[weeks[i] - 1][week - 1][Number.parseInt(start / 2)].splice(courseItemIndex, 1)
+            timetableListTemp[weeks[i] - 1][week - 1][Number.parseInt(start / 2)].unshift(temp)
+          }
+        }
+        this.$store.commit('timetable/setTimetableList', timetableListTemp)
+      },
+      /**
+       * 删除课程
+       * @param {Object} courseItem 删除目标
+       * @param {Object} courseItemIndex 需要删除课程的索引
+       */
+      deleteCourseItem(courseItem, courseItemIndex) {
+        const timetableListTemp = Array.from(this.timetableList)
+        const {
+          start,
+          week,
+          weeks
+        } = courseItem
+        uni.showModal({
+          title: '警告',
+          content: `确定删除该课程吗？\n此操作只会删除星期${ week }的课时`,
+          success: (res) => {
+            if (res.confirm) {
+              for (let i = 0; i < weeks.length; i++) {
+                timetableListTemp[weeks[i] - 1][week - 1][Number.parseInt(start / 2)].splice(courseItemIndex, 1)
+              }
+              this.$store.commit('timetable/setTimetableList', timetableListTemp)
+              this.showCourseCard = !this.showCourseCard
+            } else {
+              return
+            }
+          }
+        })
+      },
     }
   }
 </script>
 
 <style lang="scss" scoped>
+  @import 'icon.css';
+
   .bg-orange {
     background-color: #ff907d;
     color: #fff;
@@ -253,7 +324,7 @@
   .timetable-bg {
     background-size: cover;
     background-position: center center;
-    padding-bottom: 120rpx;
+    padding-bottom: 20rpx;
   }
 
   .timetable-header {
@@ -323,7 +394,7 @@
   .timetable-item {
     position: absolute;
     width: 13.0vw;
-    z-index: 5;
+    z-index: 10;
 
     &-content {
       margin: 4rpx;
@@ -340,8 +411,6 @@
         margin: 0 auto;
         background-color: #FFFFFF;
         position: absolute;
-        // right: 10rpx;
-        // left: 10rpx;
         bottom: 10rpx;
         border-radius: 5rpx;
         opacity: 0.7;
@@ -349,7 +418,67 @@
     }
   }
 
-  .timetable-item .blank {
-    z-index: 4;
+  .blank {
+    z-index: 5;
+  }
+
+  .course-card {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+
+    .mask {
+      position: absolute;
+      width: 100%;
+      height: 120%;
+      top: 0;
+      left: 0;
+      z-index: 105;
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .course-item {
+      margin: 30rpx 40rpx;
+      padding: 30rpx;
+      border-radius: 20rpx;
+      background-color: #FFFFFF;
+      z-index: 200;
+      color: #FFFFFF;
+      line-height: 1.6em;
+
+      .course-title {
+        padding: 20rpx 0;
+        text-align: center;
+        font-size: 36rpx;
+      }
+
+      .course-other {
+        padding: 10rpx 20rpx;
+
+        text {
+          font-size: 36rpx;
+          margin-right: 10rpx;
+        }
+      }
+
+      .course-action {
+        padding: 10rpx 20rpx;
+        font-size: 42rpx;
+        display: flex;
+        align-items: center;
+
+        view {
+          margin-right: 50rpx;
+        }
+      }
+    }
+
+
   }
 </style>
