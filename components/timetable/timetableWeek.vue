@@ -1,5 +1,5 @@
 <template>
-  <view style="background-color: #F1F1F1;" v-show="showTimetableWeek">
+  <view class="week-choose" v-show="showTimetableWeek">
     <scroll-view class="week-choose-nav" scroll-x scroll-with-animation :scroll-left="scrollLeft">
       <block v-for="(weekTimetable, weekIndex) in timetableList" :key="weekIndex">
         <view class="week-item"
@@ -56,6 +56,11 @@
 </script>
 
 <style lang="scss" scoped>
+  .week-choose {
+    background-color: #F1F1F1;
+    color: #666666;
+  }
+
   .week-choose-nav {
     white-space: nowrap;
 

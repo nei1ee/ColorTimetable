@@ -1,7 +1,7 @@
 <template>
   <view>
-    <timetable-week></timetable-week>
-    <timetable-body></timetable-body>
+<!--    <timetable-week></timetable-week>
+    <timetable-body></timetable-body> -->
     <!-- <view class="course-detail" v-if="showCourseDetail">
       <view class="mask" @click="showCourseDetail = !showCourseDetail"></view>
       <swiper class="card-swiper">

@@ -1,16 +1,20 @@
 <template>
-  <view class="timetable-bg" :style="bgImageStyle">
+  <view class="timetable-bg text-gray" :style="bgImageStyle">
     <!-- 课表时间头 -->
     <view class="timetable-header" :style="!bgImage ? 'background-color:#FFFFFF' : ''">
       <view class="timetable-header-left">
-        <text>{{ `${currentMonth}\n月` }}</text>
+        <text>{{ `${currentMonth?currentMonth:''}\n月` }}</text>
       </view>
       <view class="timetable-header-right">
-        <block v-for="(item, index) in dayArray" :key="index">
-          <text style="flex: 1;text-align: center;font-size: 24rpx;"
-            :class="(originalWeekIndex === currentWeekIndex) && (weekWeekIndex === index) ? 'text-orange text-bold' : '' ">
-            {{ `周${weekTitle[index]}\n${item}日` }}
-          </text>
+        <block v-for="(item, index) in currentWeekdDayArray" :key="index">
+          <view class="day-item">
+            <view v-if="(originalWeekIndex === currentWeekIndex) && (weekWeekIndex === index)" class="day-item-cur">
+            </view>
+            <text :class="(originalWeekIndex === currentWeekIndex) && (weekWeekIndex === index) ? 'text-orange' : ''">
+              {{ `周${weekTitle[index]}\n` }}
+              <text style="font-size: 20rpx;">{{`${item?item:'00'}日`}}</text>
+            </text>
+          </view>
         </block>
       </view>
     </view>
@@ -19,20 +23,23 @@
       <!-- 课表左侧时间 -->
       <view class="timetable-body-left">
         <view class="timetable-body-left-time" v-for="(item, index) in 10" :key="index">
-          <text style="font-size: 20rpx;">
-            {{ index + 1 }}
-            {{`${classTime[index].s}\n${classTime[index].e}`}}
+          <text>
+            {{ index + 1 }}\n
+            <text style="font-size: 18rpx;">
+              {{`${classTime[index].s}\n${classTime[index].e}`}}
+            </text>
           </text>
         </view>
       </view>
-      <!-- 课表主体区域 -->
+      <!-- 课表主体 -->
       <view class="timetable-body-right">
         <block v-for="(dayTimetable, weekIndex) in parserTimetable" :key="weekIndex">
           <block v-for="(dayItem, dayIndex) in dayTimetable" :key="dayIndex">
             <view v-if="dayItem.length" class="timetable-item"
-              :style="'margin-left:' + (dayItem[0].week - 1) * 13.0 +'vw;margin-top:' +(dayItem[0].start - 1) * 120 + 'rpx;height:' + dayItem[0].duration * 120 + 'rpx;'">
+              :style="'margin-left:' + (dayItem[0].week - 1) * 13.0 +'vw;margin-top:' +(dayItem[0].start - 1) * 120 + 'rpx;'">
               <view class="timetable-item-content"
-                :style="dayItem.length > 1? 'height:' + (dayItem[0].duration * 120 - 6) + 'rpx;background: linear-gradient(to left top, transparent 50%, rgba(0, 0, 0, 0.2) 0) no-repeat 100% 100% / 1.0em 1.0em, linear-gradient(-45deg, transparent 0.7em,' + dayItem[0].color + ' 0);' : 'height:' + (dayItem[0].duration * 120 - 6) + 'rpx;background-color:' + dayItem[0].color + ';'">
+                :style="'height:' + (dayItem[0].duration * 120 - 8) + 'rpx;background-color:' + dayItem[0].color + ';'">
+                <view v-if="dayItem.length > 1" class="twice-course"></view>
                 <text>
                   <text style="font-size: 24rpx;">
                     {{ parserCourseTitle(dayItem[0].title) }}
@@ -49,6 +56,34 @@
         </block>
       </view>
     </view>
+    <!-- 点击课表卡片 -->
+    <!-- <view class="course-detail" v-if="showCourseDetail">
+      <view class="mask" @click="showCourseDetail = !showCourseDetail"></view>
+      <swiper class="card-swiper">
+        <swiper-item class="card-swiper-item" v-for="(courseItem, courseIndex) in courseDetailData.courseItemData"
+          :key="courseIndex">
+          <view class="swiper-item">
+            <view class="swiper-body">
+              <view class="course-title">
+                {{ courseItem.title }}
+              </view>
+              <view class="course-other">
+                <view class="">
+                  地点：{{ courseItem.location ? courseItem.location : '无' }}
+                </view>
+                <view class="">
+                  教师：{{ courseItem.teacher ? courseItem.teacher : '无'}}
+                </view>
+                <view class="">
+                  时间：{{ courseItem.time ? courseItem.time : '无'}}
+                </view>
+              </view>
+            </view>
+          </view>
+        </swiper-item>
+      </swiper>
+    </view> -->
+
   </view>
 </template>
 
@@ -97,14 +132,10 @@
           'e': '21:40'
         }],
         colorArray: [
-          ['#99CCFF', '#FFCC99', '#FFCCCC', '#CC6699', '#99CCCC', '#FF6666', '#CCCC66', '#66CC99', '#FF9966',
-            '#66CCCC', '#6699CC', '#99CC99', '#669966', '#99CC99', '#99CCCC', '#66CCFF', '#CCCCFF', '#99CC66',
-            '#CCCC99', '#FF9999',
+          ['#FFDC72', '#CE7CF4', '#FF7171', '#66CC99', '#FF9966', '#66CCCC', '#6699CC', '#99CC99', '#669966',
+            '#66CCFF', '#99CC66', '#FF9999', '#81CC74'
           ],
-          ['#1fb49b', '#cf667d', '#139ad4', '#c19191', '#da95b7', '#a685c0', '#00bdaa', '#e29aad', '#81cc74',
-            '#e29e6a', '#7397db', '#c496c9', '#d3695b', '#a1d699',
-          ],
-          ['#87d7eb', '#acd598', '#5ec876', '#fbc7cc', '#ce7cf4', '#bf66d3', '#ffdc72', '#ff9983', '#ff7171']
+          ['#99CCFF', '#FFCC99', '#CCCCFF', '#99CCCC', '#A1D699', '#7397db', '#ff9983', '#87D7EB', '#99CC99']
         ],
         startX: 0,
         towards: 0
@@ -112,7 +143,6 @@
     },
     computed: {
       ...mapState('timetable', [
-        'startDay',
         'timetableList',
         'colorArrayIndex',
         'bgImage'
@@ -122,7 +152,7 @@
         'currentWeekIndex',
         'weekWeekIndex',
         'currentMonth',
-        'dayArray'
+        'currentWeekdDayArray'
       ]),
       // 课程背景样式
       bgImageStyle: function() {
@@ -167,11 +197,10 @@
       }
     },
     methods: {
-      parserCourseTitle: function(title) {
+      parserCourseTitle(title) {
         return title.length > 12 ? title.substring(0, 12) : title
       },
       touchStart(e) {
-        // console.log(e)
         if (e.touches.length) {
           this.startX = e.touches[0].clientX
         }
@@ -185,12 +214,15 @@
       touchEnd(e) {
         let currentWeekIndexTemp = this.currentWeekIndex
         const towards = this.towards
-        if (towards < -50) {
-          currentWeekIndexTemp++
-        } else if (towards > 50) {
-          currentWeekIndexTemp--
+        if (towards !== 0) {
+          if (towards < -50) {
+            currentWeekIndexTemp++
+          } else if (towards > 50) {
+            currentWeekIndexTemp--
+          }
+          this.towards = 0
+          this.$store.commit('timetable/setCurrentWeekIndex', currentWeekIndexTemp)
         }
-        this.$store.commit('timetable/setCurrentWeekIndex', currentWeekIndexTemp)
       }
     }
   }
@@ -204,6 +236,14 @@
 
   .text-orange {
     color: #ff907d;
+  }
+
+  .text-blue {
+    color: #1798D9;
+  }
+
+  .text-gray {
+    color: #666666;
   }
 
   .text-bold {
@@ -220,33 +260,39 @@
     display: flex;
     z-index: 10;
     height: 80rpx;
+    font-size: 25rpx;
 
     &-left {
-      // background-color: #ff907d;
-      // color: #fff;
-      width: 9vw;
-      position: relative;
-      text-align: center;
-      font-size: 24rpx;
-      height: 70rpx;
-    }
-
-    // &-left::after {
-    //   position: absolute;
-    //   content: '';
-    //   left: 0;
-    //   top: 100%;
-    //   border-style: solid;
-    //   border-width: 0 4.55vw 16rpx 4.55vw;
-    //   border-color: #ff907d #ff907d transparent #ff907d;
-    // }
-
-    &-right {
-      width: 92.6vw;
-      line-height: 35rpx;
+      width: 9.0vw;
       display: flex;
       justify-content: center;
       align-items: center;
+      text-align: center;
+    }
+
+    &-right {
+      width: 91.0vw;
+      display: flex;
+
+      .day-item {
+        border-radius: 10rpx;
+        text-align: center;
+        font-size: 24rpx;
+        width: calc(13.0vw - 8rpx);
+        margin: 4rpx;
+        position: relative;
+        display: flex;
+        justify-content: center;
+
+        &-cur {
+          width: calc(13.0vw - 40rpx);
+          height: 8rpx;
+          background-color: #FF907D;
+          position: absolute;
+          bottom: -2rpx;
+          border-radius: 5rpx;
+        }
+      }
     }
   }
 
@@ -262,6 +308,7 @@
         align-items: center;
         justify-content: center;
         text-align: center;
+        font-size: 20rpx;
       }
     }
 
@@ -276,20 +323,29 @@
   .timetable-item {
     position: absolute;
     width: 13.0vw;
-    padding: 3.0rpx;
     z-index: 5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 
     &-content {
-      width: calc(13.0vw - 6rpx);
-      height: 100%;
+      margin: 4rpx;
       border-radius: 10rpx;
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
+
+      .twice-course {
+        width: 70rpx;
+        height: 8rpx;
+        margin: 0 auto;
+        background-color: #FFFFFF;
+        position: absolute;
+        // right: 10rpx;
+        // left: 10rpx;
+        bottom: 10rpx;
+        border-radius: 5rpx;
+        opacity: 0.7;
+      }
     }
   }
 

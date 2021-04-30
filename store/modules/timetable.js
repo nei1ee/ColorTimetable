@@ -52,7 +52,7 @@ export default {
       myDate.setDate(myDate.getDate() + weekIndex * 7)
       return myDate.getMonth() + 1
     },
-    dayArray: (state, getters) => {
+    currentWeekdDayArray: (state, getters) => {
       const weekIndex = getters.currentWeekIndex
       const myDate = new Date(state.startDay)
       myDate.setDate(myDate.getDate() + weekIndex * 7)
