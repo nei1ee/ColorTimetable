@@ -1,37 +1,37 @@
-## uni-app 课程表组件
+# uni-app 课程表组件
 
-### 界面预览
+## 界面预览
 
-![](https://cdn.jsdelivr.net/gh/zguolee/cloud_images/38560C2C-0A2C-435A-ABFB-312C803A7D3C_1_105_c.jpeg)
+![](https://cdn.jsdelivr.net/gh/zguolee/cloud_images/timetable-color.jpg)![](https://cdn.jsdelivr.net/gh/zguolee/cloud_images/timetable-feat.jpg)
 
-### 目录结构
+## 目录结构
 
 ```
-timetable
-├─.gitattributes
-├─.gitignore
-├─App.vue
-├─README.md
-├─main.js
-├─manifest.json
-├─pages.json
-├─uni.scss
-├─utils
-|   └timeUtils.js
-├─static
-|   ├─guest.js
-|   └logo.png
-├─pages
-|   ├─index
-|   |   └index.vue
-├─components
-|     ├─timetable
-|     |     ├─courseItem.vue
-|     |     ├─timetableBody.vue
-|     |     └timetableWeek.vue
+.
+├── App.vue
+├── LICENSE
+├── README.md
+├── components
+│   └── timetable
+│       ├── icon.css
+│       └── timetableBody.vue
+├── main.js
+├── manifest.json
+├── pages
+│   └── index
+│       └── index.vue
+├── pages.json
+├── static
+│   ├── guest.js
+│   └── logo.png
+├── store
+│   ├── index.js
+│   └── modules
+│       └── timetable.js
+└── uni.scss
 ```
 
-### 课表数据说明
+## 课表数据说明
 
 ```javascript
 [
@@ -68,98 +68,115 @@ timetable
 ]
 ```
 
-### 使用方法
+## 使用方法
 
 >  `static` 目录下 `guest.js`为测试课表文件
 1. 将 `components` 目录下 `timetable`文件夹拷贝至你所在的项目中
-2. 将 `utils` 目录下 `timeUtils.js` 文件拷贝至合适的文件夹中
-3. 修改 `main.js` 文件添加以下代码
+2. 将 `store` 目录下 `modules` 文件夹拷贝至相应文件夹中
+3. 修改 `store.js` 文件添加以下代码
+
+```js
+import Vue from 'vue'
+import Vuex from 'vuex'
+
+import timetable from '@/store/modules/timetable'
+
+Vue.use(Vuex)
+
+const store = new Vuex.Store({
+  modules: {
+    timetable
+  }
+})
+
+export default store
+```
+
+4. 修改 `main.js` 文件添加以下代码
 
 ```js
 import Vue from 'vue'
 import App from './App'
+import store from './store'
 ...
-// 引入时间处理工具包
-import timeUtils from 'utils/timeUtils.js'
-Vue.prototype.$timeUtils = timeUtils
+Vue.prototype.$store = store
 ...
+const app = new Vue({
+  store,
+  ...App,
+})
 app.$mount()
 ```
 
-4. 引入组件，相关代码如下：
+5. 引入组件，相关代码如下：
 
 ```vue
 <template>
   <view>
-    <view class="" style="display: flex;">
-      <button type="default" size="mini"
-        @click="showTimetableWeek = !showTimetableWeek">{{showTimetableWeek ? '隐藏周选择' : '显示周选择'}}</button>
-      <button type="default" size="mini" @click="colorArrayIndex=0">色卡1</button>
-      <button type="default" size="mini" @click="colorArrayIndex=1">色卡2</button>
-    </view>
-    <timetable-week v-if="showTimetableWeek" :timetableList="timetableList" :currentWeekIndex="currentWeekIndex"
-      :originalWeekIndex="originalWeekIndex"></timetable-week>
-    <timetable-body :timetableList="timetableList" :startDay="startDay" :currentWeekIndex="currentWeekIndex"
-      :colorArrayIndex="colorArrayIndex">
-    </timetable-body>
+    <!-- 课表主体 -->
+    <timetable-body></timetable-body>
+    ...
   </view>
 </template>
 
 <script>
-  // 离线数据
+  import {
+    mapState,
+    mapGetters
+  } from 'vuex'
   import {
     timetableData
   } from '../../static/guest.js'
-  // 周索引切换组件
-  import timetableWeek from '../../components/timetable/timetableWeek.vue'
   // 课表主体
   import timetableBody from '../../components/timetable/timetableBody.vue'
   export default {
     data() {
-      return {
-        // 课表数据
-        timetableList: null,
-        // 开学时间
-        startDay: '2021/03/01 00:00:00',
-        // 当前周索引
-        originalWeekIndex: 0,
-        // 跳转周索引
-        currentWeekIndex: 0,
-        // 色卡索引
-        colorArrayIndex: 0,
-        showTimetableWeek: false
-      }
+      return {}
     },
     components: {
-      timetableWeek,
       timetableBody
     },
     onLoad() {
-      this.timetableList = timetableData
-      // 获取当前周索引
-      this.originalWeekIndex = this.$timeUtils.getCurrentWeekIndex(this.startDay)
-      this.currentWeekIndex = this.originalWeekIndex
-
-      // 监听周索引变化
-      const that = this
-      uni.$on('changeWeekIndex', function(data) {
-        that.currentWeekIndex = data.newWeekIndex
-        // 设置标题
+      // 设置开学时间
+      this.$store.commit('timetable/setStartDay', '2021/03/01 00:00:00')
+      // 初始化课表数据
+      this.$store.commit('timetable/setTimetableList', timetableData)
+    },
+    computed: {
+      ...mapState('timetable', [
+        'showTimetableWeek',
+        'bgImage'
+      ]),
+      ...mapGetters('timetable', [
+        'originalWeekIndex',
+        'currentWeekIndex',
+        'weekWeekIndex'
+      ])
+    },
+    watch: {
+      currentWeekIndex(newVal, oldVal) {
         uni.setNavigationBarTitle({
-          title: `第${that.currentWeekIndex+1}周课表`
+          title: `第${newVal + 1}周课表`
         })
-      })
-
-      uni.setNavigationBarTitle({
-        title: `第${that.currentWeekIndex+1}周课表`
-      })
+      }
     }
   }
 </script>
-
 ```
 
-### 更新日志
+## 开源许可
+
+本项目使用开源许可证 License GPLv3 ，代码开源仅供学习交流，禁止私用、商用，违者必究。
+
+## 更新日志
+
+#### Version 1.1.0
+
+1. F 使用 vuex
+2. U 课表色卡
+3. U 冲突课程显示方式
+4. A 课程详情卡片
+5. A 删除课程、课程置顶
 
 #### Version 1.0.1
 
@@ -173,7 +190,7 @@ app.$mount()
 2. A 冲突课程折角
 3. A 周课表色卡切换
 
-## 开源许可
+## 致谢
 
-本项目使用开源许可证 License GPLv3 ，代码开源仅供学习交流，禁止私用、商用，违者必究。
+图标库使用[ColorUI](https://github.com/weilanwl/ColorUI)图标库
 

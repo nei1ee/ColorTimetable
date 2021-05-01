@@ -1,25 +1,52 @@
 <template>
-  <view class="timetable-bg text-gray" :style="bgImageStyle">
-    <!-- 课表时间头 -->
-    <view class="timetable-header" :style="!bgImage ? 'background-color:#FFFFFF' : ''">
-      <view class="timetable-header-left">
-        <text>{{ `${currentMonth?currentMonth:''}\n月` }}</text>
-      </view>
-      <view class="timetable-header-right">
-        <block v-for="(item, index) in currentWeekdDayArray" :key="index">
-          <view class="day-item">
-            <view v-if="(originalWeekIndex === currentWeekIndex) && (weekWeekIndex === index)" class="day-item-cur">
+  <view class="timetable-main text-gray" :style="bgImageStyle">
+    <view class="timetable-fixed" :style="bgImageStyle">
+      <!-- 周数切换 -->
+      <view class="timetable-week" v-if="showTimetableWeek">
+        <scroll-view class="week-nav" scroll-x scroll-with-animation :scroll-left="scrollLeft">
+          <view class="week-item" v-for="(weekTimetable, weekIndex) in timetableList" :key="weekIndex">
+            <view class="item-main" :class="originalWeekIndex === weekIndex ? 'original' : 
+              (currentWeekIndex === weekIndex? 'current' : '')"
+              @click="$store.commit('timetable/setCurrentWeekIndex', weekIndex)">
+              <view class="main-week">
+                第{{ weekIndex + 1 }}周
+              </view>
+              <view class="main-body">
+                <block v-for="(dayTimetable, dayIndex) in weekTimetable" :key="dayIndex">
+                  <view v-if="dayIndex < 5" class="body-item">
+                    <block v-for="(timeTimetable, timeIndex) in dayTimetable" :key="timeIndex">
+                      <view class="item-dot" :class="timeTimetable.length >= 1 ? 'true' : 'false'"></view>
+                    </block>
+                  </view>
+                </block>
+              </view>
             </view>
-            <text :class="(originalWeekIndex === currentWeekIndex) && (weekWeekIndex === index) ? 'text-orange' : ''">
-              {{ `周${weekTitle[index]}\n` }}
-              <text style="font-size: 20rpx;">{{`${item?item:'00'}日`}}</text>
-            </text>
           </view>
-        </block>
+        </scroll-view>
+      </view>
+      <!-- 课表时间头 -->
+      <view class="timetable-time">
+        <view class="timetable-time-left">
+          <text>{{ `${currentMonth}\n月` }}</text>
+        </view>
+        <view class="timetable-time-right">
+          <block v-for="(item, index) in currentWeekdDayArray" :key="index">
+            <view class="day-item">
+              <view v-if="(originalWeekIndex === currentWeekIndex) && (weekWeekIndex === index)" class="day-item-cur">
+              </view>
+              <text :class="(originalWeekIndex === currentWeekIndex) && (weekWeekIndex === index) ? 'text-orange' : ''">
+                {{ `周${weekTitle[index]}\n` }}
+                <text style="font-size: 20rpx;">{{`${item?item:'00'}日`}}</text>
+              </text>
+            </view>
+          </block>
+        </view>
       </view>
     </view>
+
     <!-- 课表主体区域 -->
-    <view class="timetable-body" @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd">
+    <view class="timetable-body" :style="showTimetableWeek ? 'margin-top:220rpx;' : 'margin-top:80rpx;'"
+      @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd">
       <!-- 课表左侧时间 -->
       <view class="timetable-body-left">
         <view class="timetable-body-left-time" v-for="(item, index) in 10" :key="index">
@@ -75,6 +102,10 @@
           <view class="">
             <text class="cuIcon-time"></text>{{ courseItem.time ? courseItem.time : '无'}}
           </view>
+          <view class="">
+            <text class="cuIcon-evaluate"></text>
+            {{`学时：${courseItem.period ? courseItem.period : '无'} 学分：${ courseItem.credit ? courseItem.credit : '无'}`}}
+          </view>
         </view>
         <view class="course-action">
           <view v-if="courseItemIndex === 0" style="font-size: 32rpx;">已置顶</view>
@@ -99,46 +130,6 @@
     data() {
       return {
         weekTitle: ['一', '二', '三', '四', '五', '六', '日'],
-        classTime: [{
-          's': '08:00',
-          'e': '08:50'
-        }, {
-          's': '08:55',
-          'e': '09:45'
-        }, {
-          's': '10:15',
-          'e': '11:05'
-        }, {
-          's': '11:10',
-          'e': '12:00'
-        }, {
-          's': '14:00',
-          'e': '14:50'
-        }, {
-          's': '14:55',
-          'e': '15:45'
-        }, {
-          's': '16:15',
-          'e': '17:05'
-        }, {
-          's': '17:10',
-          'e': '18:00'
-        }, {
-          's': '19:00',
-          'e': '19:50'
-        }, {
-          's': '19:55',
-          'e': '20:45'
-        }, {
-          's': '20:50',
-          'e': '21:40'
-        }],
-        colorArray: [
-          ['#FFDC72', '#CE7CF4', '#FF7171', '#66CC99', '#FF9966', '#66CCCC', '#6699CC', '#99CC99', '#669966',
-            '#66CCFF', '#99CC66', '#FF9999', '#81CC74'
-          ],
-          ['#99CCFF', '#FFCC99', '#CCCCFF', '#99CCCC', '#A1D699', '#7397db', '#ff9983', '#87D7EB', '#99CC99']
-        ],
         startX: 0,
         towards: 0,
         // 课表详情卡片
@@ -149,6 +140,9 @@
     computed: {
       ...mapState('timetable', [
         'timetableList',
+        'showTimetableWeek',
+        'classTime',
+        'colorArray',
         'colorArrayIndex',
         'bgImage'
       ]),
@@ -202,6 +196,15 @@
       }
     },
     methods: {
+      // 周切换移动动画
+      scrollLeft() {
+        if (this.showTimetableWeek) {
+          if (this.originalWeekIndex === this.currentWeekIndex) {
+            return this.originalWeekIndex * 60
+          }
+          return this.currentWeekIndex * 60
+        }
+      },
       parserCourseTitle(title) {
         return title.length > 12 ? title.substring(0, 12) : title
       },
@@ -321,15 +324,94 @@
     font-weight: bold;
   }
 
-  .timetable-bg {
+  .timetable-main {
     background-size: cover;
     background-position: center center;
     padding-bottom: 20rpx;
+
+    .timetable-fixed {
+      position: fixed;
+      top: 0;
+      z-index: 100;
+      width: 100%;
+    }
   }
 
-  .timetable-header {
+  .timetable-week {
+    background-color: #F1F1F1;
+    color: #666666;
+    height: 140rpx;
     display: flex;
-    z-index: 10;
+    align-items: center;
+
+    .week-nav {
+      white-space: nowrap;
+
+      .week-item {
+        width: 132rpx;
+        height: 120rpx;
+        display: inline-block;
+
+        .item-main {
+          width: 96rpx;
+          border-radius: 10rpx;
+          margin: 0 auto;
+          padding: 8rpx 0;
+          display: flex;
+          justify-content: center;
+          flex-direction: column;
+          align-items: center;
+
+          &.original {
+            background-color: #C8C7CC;
+          }
+
+          &.current {
+            background-color: #FFFFFF;
+          }
+
+          .main-week {
+            font-size: 20rpx;
+            text-align: center;
+            margin-bottom: 8rpx;
+          }
+
+          .main-body {
+            width: 70rpx;
+            height: 70rpx;
+            display: flex;
+            justify-content: space-evenly;
+
+            .body-item {
+              width: 10rpx;
+              height: 70rpx;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-evenly;
+
+              .item-dot {
+                width: 10rpx;
+                height: 10rpx;
+                border-radius: 50%;
+
+                &.true {
+                  background-color: #3fd0a9;
+                }
+
+                &.false {
+                  background-color: #DCDCDC;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+
+  .timetable-time {
+    display: flex;
     height: 80rpx;
     font-size: 25rpx;
 
@@ -478,7 +560,5 @@
         }
       }
     }
-
-
   }
 </style>
