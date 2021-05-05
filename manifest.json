@@ -1,5 +1,5 @@
 {
-    "name" : "timetable",
+    "name" : "ColorTimetable",
     "appid" : "__UNI__8A84812",
     "description" : "",
     "versionName" : "1.0.0",
@@ -52,7 +52,7 @@
     "quickapp" : {},
     /* 小程序特有相关 */
     "mp-weixin" : {
-        "appid" : "wx7f811299d8a7f86a",
+        "appid" : "wx75a923653afa4a7a",
         "setting" : {
             "urlCheck" : false,
             "es6" : true

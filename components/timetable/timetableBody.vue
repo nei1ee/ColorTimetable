@@ -45,7 +45,7 @@
     </view>
 
     <!-- 课表主体区域 -->
-    <view class="timetable-body" :style="showTimetableWeek ? 'margin-top:220rpx;' : 'margin-top:80rpx;'"
+    <view class="timetable-body" :style="showTimetableWeek ? 'padding-top:220rpx;' : 'padding-top:80rpx;'"
       @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd">
       <!-- 课表左侧时间 -->
       <view class="timetable-body-left">
@@ -161,6 +161,15 @@
         }
         return style
       },
+      // 周切换移动动画
+      scrollLeft() {
+        if (this.showTimetableWeek) {
+          if (this.originalWeekIndex === this.currentWeekIndex) {
+            return this.originalWeekIndex * 60
+          }
+          return this.currentWeekIndex * 60
+        }
+      },
       // 周课表颜色渲染
       parserTimetable: function() {
         const colorArray = this.colorArray[this.colorArrayIndex]
@@ -196,15 +205,6 @@
       }
     },
     methods: {
-      // 周切换移动动画
-      scrollLeft() {
-        if (this.showTimetableWeek) {
-          if (this.originalWeekIndex === this.currentWeekIndex) {
-            return this.originalWeekIndex * 60
-          }
-          return this.currentWeekIndex * 60
-        }
-      },
       parserCourseTitle(title) {
         return title.length > 12 ? title.substring(0, 12) : title
       },
@@ -223,12 +223,12 @@
         let currentWeekIndexTemp = this.currentWeekIndex
         const towards = this.towards
         if (towards !== 0) {
-          if (towards < -50) {
+          if (towards < -100) {
             // 右滑，周索引--
             if (currentWeekIndexTemp !== 0) {
               currentWeekIndexTemp--
             }
-          } else if (towards > 50) {
+          } else if (towards > 100) {
             // 右滑，周索引++
             if (currentWeekIndexTemp !== 19) {
               currentWeekIndexTemp++
@@ -326,14 +326,16 @@
 
   .timetable-main {
     background-size: cover;
-    background-position: center center;
-    padding-bottom: 20rpx;
+    background-position: 0% 0%;
+    padding-bottom: 40rpx;
 
     .timetable-fixed {
       position: fixed;
       top: 0;
       z-index: 100;
       width: 100%;
+      background-size: cover;
+      background-position: 0% 0%;
     }
   }
 

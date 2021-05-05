@@ -31,10 +31,14 @@
       timetableBody
     },
     onLoad() {
-      // 设置开学时间
-      this.$store.commit('timetable/setStartDay', '2021/03/01 00:00:00')
+      const someDate = new Date()
+      someDate.setDate(someDate.getDate() - 8 * 7)
+      // 设置开学时间 eg: 2021/03/01 00:00:00
+      this.$store.commit('timetable/setStartDay', someDate)
       // 初始化课表数据
       this.$store.commit('timetable/setTimetableList', timetableData)
+      // 设置背景
+      this.$store.commit('timetable/setBgImage', 'https://cdn.jsdelivr.net/gh/zguolee/cloud_images/background1.jpeg')
     },
     computed: {
       ...mapState('timetable', [
