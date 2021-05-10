@@ -1,6 +1,6 @@
 <template>
   <view class="timetable-main text-gray" :style="bgImageStyle">
-    <view class="timetable-fixed" :style="bgImageStyle">
+    <view class="timetable-fixed" :style="{bgImageStyle, 'padding-top': customBar + 'px'}">
       <!-- 周数切换 -->
       <view class="timetable-week" v-if="showTimetableWeek">
         <scroll-view class="week-nav" scroll-x scroll-with-animation :scroll-left="scrollLeft">
@@ -32,9 +32,11 @@
         <view class="timetable-time-right">
           <block v-for="(item, index) in currentWeekdDayArray" :key="index">
             <view class="day-item">
-              <view v-if="(originalWeekIndex === currentWeekIndex) && (weekWeekIndex === index)" class="day-item-cur">
+              <view v-if="(originalWeekIndex === currentWeekIndex) &&
+               (weekWeekIndex === index)" class="day-item-cur">
               </view>
-              <text :class="(originalWeekIndex === currentWeekIndex) && (weekWeekIndex === index) ? 'text-orange' : ''">
+              <text :class="(originalWeekIndex === currentWeekIndex) &&
+               (weekWeekIndex === index) ? 'text-orange' : ''">
                 {{ `周${weekTitle[index]}\n` }}
                 <text style="font-size: 20rpx;">{{`${item ? item : '00'}日`}}</text>
               </text>
@@ -45,8 +47,10 @@
     </view>
 
     <!-- 课表主体区域 -->
-    <view class="timetable-body" :style="showTimetableWeek ? 'padding-top:220rpx;' : 'padding-top:80rpx;'"
-      @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd">
+    <view class="timetable-body" :style="showTimetableWeek ?
+     'padding-top: calc(' + customBar + 'px + 220rpx);' :
+      'padding-top: calc(' + customBar + 'px + 80rpx);'" @touchstart="touchStart" @touchmove="touchMove"
+      @touchend="touchEnd">
       <!-- 课表左侧时间 -->
       <view class="timetable-body-left">
         <view class="timetable-body-left-time" v-for="(item, index) in 10" :key="index">
@@ -127,6 +131,8 @@
     name: "timetableBody",
     data() {
       return {
+        customBar: this.customBar,
+        statusBar: this.statusBar,
         weekTitle: ['一', '二', '三', '四', '五', '六', '日'],
         colorMap: new Map(),
         startX: 0,
