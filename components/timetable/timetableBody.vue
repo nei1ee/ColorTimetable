@@ -36,7 +36,7 @@
               </view>
               <text :class="(originalWeekIndex === currentWeekIndex) && (weekWeekIndex === index) ? 'text-orange' : ''">
                 {{ `周${weekTitle[index]}\n` }}
-                <text style="font-size: 20rpx;">{{`${item?item:'00'}日`}}</text>
+                <text style="font-size: 20rpx;">{{`${item ? item : '00'}日`}}</text>
               </text>
             </view>
           </block>
@@ -60,13 +60,14 @@
       </view>
       <!-- 课表主体 -->
       <view class="timetable-body-right">
-        <block v-for="(dayTimetable, weekIndex) in parserTimetable" :key="weekIndex">
+        <block v-for="(dayTimetable, weekIndex) in timetableList[currentWeekIndex]" :key="weekIndex">
           <block v-for="(dayItem, dayIndex) in dayTimetable" :key="dayIndex">
-            <view v-if="dayItem.length" class="timetable-item"
-              :style="'margin-left:' + (dayItem[0].week - 1) * 13.0 +'vw;margin-top:' +(dayItem[0].start - 1) * 120 + 'rpx;'"
+            <view class="timetable-item" :class="!dayItem.length ? 'blank' : ''"
+              :style="'margin-left:' + weekIndex * 13.0 + 'vw;margin-top:' + dayIndex * 2 * 120 +'rpx;'"
               @click="showCourseDetail(dayItem)">
-              <view class="timetable-item-content"
-                :style="'height:' + (dayItem[0].duration * 120 - 8) + 'rpx;background-color:' + dayItem[0].color + ';'">
+              <view v-if="dayItem.length" class="timetable-item-content" :style="'height:' +
+               (dayItem[0].duration * 120 - 8) + 'rpx;background-color:' +
+                 getCourseColor(dayItem[0].title) + ';'">
                 <view v-if="dayItem.length > 1" class="twice-course"></view>
                 <text>
                   <text style="font-size: 24rpx;">
@@ -76,40 +77,37 @@
                 </text>
               </view>
             </view>
-            <view v-else class="timetable-item blank"
-              :style="'margin-left:' + weekIndex * 13.0 + 'vw;margin-top:' + dayIndex * 2 * 120 +'rpx;height: 240rpx;'">
-              <view class="timetable-item-content"></view>
-            </view>
           </block>
         </block>
       </view>
     </view>
-    <!-- 点击课表卡片 -->
+    <!-- 课表卡片 -->
     <view class="course-card" v-if="showCourseCard">
       <view class="mask" @click="showCourseCard = !showCourseCard"></view>
       <view class="course-item" v-for="(courseItem, courseItemIndex) in courseCardData" :key="courseItemIndex"
-        :style="'background-color:' + courseItem.color">
+        :style="'background-color:' + getCourseColor(courseItem.title)">
         <view class="course-title">
           {{ courseItem.title }}
         </view>
         <view class="course-other">
           <view class="course-other-item">
-            <text class="cuIcon-location"></text>{{ courseItem.location ? courseItem.location : '无' }}
+            <text class="cuIcon-location">{{ courseItem.location ? courseItem.location : '无' }}</text>
           </view>
           <view class="course-other-item">
-            <text class="cuIcon-people"></text>{{ courseItem.teacher ? courseItem.teacher : '无'}}
+            <text class="cuIcon-people">{{ courseItem.teacher ? courseItem.teacher : '无'}}</text>
           </view>
           <view class="course-other-item">
-            <text class="cuIcon-time"></text>{{ courseItem.time ? courseItem.time : '无'}}
+            <text class="cuIcon-time">{{ courseItem.time ? courseItem.time : '无'}}</text>
           </view>
           <view class="course-other-item">
-            <text class="cuIcon-evaluate"></text>
-            {{`学时：${courseItem.period ? courseItem.period : '无'} 学分：${ courseItem.credit ? courseItem.credit : '无'}`}}
+            <text class="cuIcon-evaluate"
+              style="margin-right: 20rpx;">{{`学时：${courseItem.period ? courseItem.period : '无'}`}}</text>
+            <text class="cuIcon-favor"> {{`学分：${ courseItem.credit ? courseItem.credit : '无'}`}}</text>
           </view>
         </view>
         <view class="course-action">
-          <view v-if="courseItemIndex === 0" style="font-size: 32rpx;">已置顶</view>
-          <view v-else style="font-size: 32rpx;" @click="setCourseItemTop(courseItem, courseItemIndex)">
+          <view class="title" v-if="courseItemIndex === 0">已置顶</view>
+          <view class="title" v-else @click="setCourseItemTop(courseItem, courseItemIndex)">
             置顶
           </view>
           <view class="cuIcon-write"></view>
@@ -130,12 +128,13 @@
     data() {
       return {
         weekTitle: ['一', '二', '三', '四', '五', '六', '日'],
+        colorMap: new Map(),
         startX: 0,
         towards: 0,
         // 课表详情卡片
         showCourseCard: false,
         courseCardData: null
-      };
+      }
     },
     computed: {
       ...mapState('timetable', [
@@ -169,56 +168,45 @@
           }
           return this.currentWeekIndex * 60
         }
-      },
-      // 周课表颜色渲染
-      parserTimetable: function() {
-        const colorArray = this.colorArray[this.colorArrayIndex]
-        const colorArrayLength = this.colorArray[this.colorArrayIndex].length
-        const colorMap = new Map()
-        if (!(this.timetableList.length && this.currentWeekIndex >= 0)) {
-          return
-        }
-        const weekTimetableTemp = this.timetableList[this.currentWeekIndex]
-        // 色卡计次
-        let colorIndex = 0
-        // 循环周
-        for (let i = 0; i < 7; i++) {
-          // 循环节次
-          for (let j = 0; j < 5; j++) {
-            // 节次课表
-            const timeTimetable = weekTimetableTemp[i][j]
-            for (let k = 0; k < timeTimetable.length; k++) {
-              // 课表名称
-              const title = weekTimetableTemp[i][j][k]['title']
-              if (!colorMap.has(title)) {
-                colorMap.set(title, colorArray[colorIndex++])
-                // 循环色卡
-                colorIndex = colorIndex === colorArrayLength ? 0 : colorIndex
-              }
-              Object.assign(weekTimetableTemp[i][j][k], {
-                color: colorMap.get(title)
-              })
-            }
-          }
-        }
-        return weekTimetableTemp
+      }
+    },
+    watch: {
+      colorArrayIndex(newVal, oldVal) {
+        // 清除课程颜色缓存
+        this.colorMap.clear()
       }
     },
     methods: {
       parserCourseTitle(title) {
         return title.length > 12 ? title.substring(0, 12) : title
       },
+      /**
+       * 获取课程颜色
+       * @param {Object} title 课程名
+       */
+      getCourseColor(title) {
+        if (!this.colorMap.has(title)) {
+          const colorArray = this.colorArray[this.colorArrayIndex]
+          let size = this.colorMap.size
+          size = size >= colorArray.length ? 0 : size
+          this.colorMap.set(title, colorArray[size])
+        }
+        return this.colorMap.get(title)
+      },
+      // 按住
       touchStart(e) {
         if (e.touches.length) {
           this.startX = e.touches[0].clientX
         }
       },
+      // 移动
       touchMove(e) {
         if (e.touches.length) {
           const moveX = e.touches[0].clientX;
           this.towards = this.startX - moveX;
         }
       },
+      // 停止
       touchEnd(e) {
         let currentWeekIndexTemp = this.currentWeekIndex
         const towards = this.towards
@@ -239,12 +227,16 @@
         }
       },
       /**
-       * 显示课程卡片
+       * 显示/添加课程
        * @param {Object} dayItem 课程数据
        */
       showCourseDetail(dayItem) {
-        this.showCourseCard = true
-        this.courseCardData = dayItem
+        if (dayItem.length) {
+          this.showCourseCard = true
+          this.courseCardData = dayItem
+        } else {
+          console.log('add')
+        }
       },
       /**
        * 设置置顶
@@ -477,6 +469,7 @@
     position: absolute;
     width: 13.0vw;
     z-index: 10;
+    // opacity: 0.8;
 
     &-content {
       margin: 4rpx;
@@ -501,6 +494,7 @@
   }
 
   .blank {
+    height: 240rpx;
     z-index: 5;
   }
 
@@ -544,7 +538,7 @@
         padding: 10rpx 20rpx;
 
         &-item {
-          font-size: 36rpx;
+          font-size: 32rpx;
         }
       }
 
@@ -556,8 +550,12 @@
         align-items: center;
         justify-content: space-between;
 
+        .title {
+          font-size: 32rpx;
+        }
       }
     }
+
     @keyframes card {
       0% {
         transform: rotateY(-90deg);

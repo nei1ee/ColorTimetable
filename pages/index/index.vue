@@ -37,6 +37,8 @@
       this.$store.commit('timetable/setStartDay', someDate)
       // 初始化课表数据
       this.$store.commit('timetable/setTimetableList', timetableData)
+      
+      // console.log(JSON.stringify(timetableWeek))
       // 设置背景
       this.$store.commit('timetable/setBgImage', 'https://cdn.jsdelivr.net/gh/zguolee/cloud_images/background1.jpeg')
     },
