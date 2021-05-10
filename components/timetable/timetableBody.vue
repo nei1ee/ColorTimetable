@@ -93,16 +93,16 @@
           {{ courseItem.title }}
         </view>
         <view class="course-other">
-          <view class="">
+          <view class="course-other-item">
             <text class="cuIcon-location"></text>{{ courseItem.location ? courseItem.location : '无' }}
           </view>
-          <view class="">
+          <view class="course-other-item">
             <text class="cuIcon-people"></text>{{ courseItem.teacher ? courseItem.teacher : '无'}}
           </view>
-          <view class="">
+          <view class="course-other-item">
             <text class="cuIcon-time"></text>{{ courseItem.time ? courseItem.time : '无'}}
           </view>
-          <view class="">
+          <view class="course-other-item">
             <text class="cuIcon-evaluate"></text>
             {{`学时：${courseItem.period ? courseItem.period : '无'} 学分：${ courseItem.credit ? courseItem.credit : '无'}`}}
           </view>
@@ -260,10 +260,10 @@
         } = courseItem
         for (let i = 0; i < weeks.length; i++) {
           const dayDayCourse = timetableListTemp[weeks[i] - 1][week - 1][Number.parseInt(start / 2)]
-          if (timetableListTemp[weeks[i] - 1][week - 1][Number.parseInt(start / 2)].length > 1) {
-            const temp = timetableListTemp[weeks[i] - 1][week - 1][Number.parseInt(start / 2)][courseItemIndex]
-            timetableListTemp[weeks[i] - 1][week - 1][Number.parseInt(start / 2)].splice(courseItemIndex, 1)
-            timetableListTemp[weeks[i] - 1][week - 1][Number.parseInt(start / 2)].unshift(temp)
+          if (dayDayCourse.length > 1) {
+            const temp = dayDayCourse[courseItemIndex]
+            dayDayCourse.splice(courseItemIndex, 1)
+            dayDayCourse.unshift(temp)
           }
         }
         this.$store.commit('timetable/setTimetableList', timetableListTemp)
@@ -301,8 +301,6 @@
 </script>
 
 <style lang="scss" scoped>
-  @import 'icon.css';
-
   .bg-orange {
     background-color: #ff907d;
     color: #fff;
@@ -531,7 +529,7 @@
       margin: 30rpx 40rpx;
       padding: 30rpx;
       border-radius: 20rpx;
-      background-color: #FFFFFF;
+      animation: card .2s ease-in;
       z-index: 200;
       color: #FFFFFF;
       line-height: 1.6em;
@@ -545,21 +543,28 @@
       .course-other {
         padding: 10rpx 20rpx;
 
-        text {
+        &-item {
           font-size: 36rpx;
-          margin-right: 10rpx;
         }
       }
 
       .course-action {
+        width: 50%;
         padding: 10rpx 20rpx;
         font-size: 42rpx;
         display: flex;
         align-items: center;
+        justify-content: space-between;
 
-        view {
-          margin-right: 50rpx;
-        }
+      }
+    }
+    @keyframes card {
+      0% {
+        transform: rotateY(-90deg);
+      }
+
+      100% {
+        transform: rotateY(0);
       }
     }
   }

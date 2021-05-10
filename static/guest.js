@@ -27,7 +27,7 @@ const timetableData = [
       [],
       [{
         "title": "程序设计综合实践",
-        "period": "+3",
+        "period": "48",
         "credit": "3",
         "time": "星期一第9-10节{1-3周,6-8周}",
         "location": "计-13机房",
