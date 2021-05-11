@@ -1,6 +1,6 @@
 <template>
-  <view class="timetable-main text-gray" :style="bgImageStyle">
-    <view class="timetable-fixed" :style="{bgImageStyle, 'padding-top': customBar + 'px'}">
+  <view class="timetable-main text-gray" :style="[bgImageStyle]">
+    <view class="timetable-fixed" :style="[bgImageStyle, {'padding-top': customBar + 'px'}]">
       <!-- 周数切换 -->
       <view class="timetable-week" v-if="showTimetableWeek">
         <scroll-view class="week-nav" scroll-x scroll-with-animation :scroll-left="scrollLeft">
@@ -47,10 +47,9 @@
     </view>
 
     <!-- 课表主体区域 -->
-    <view class="timetable-body" :style="showTimetableWeek ?
-     'padding-top: calc(' + customBar + 'px + 220rpx);' :
-      'padding-top: calc(' + customBar + 'px + 80rpx);'" @touchstart="touchStart" @touchmove="touchMove"
-      @touchend="touchEnd">
+    <view class="timetable-body"
+      :style="{'padding-top':`calc(${customBar}px + ${showTimetableWeek ? '220' : '80'}rpx)`}" @touchstart="touchStart"
+      @touchmove="touchMove" @touchend="touchEnd">
       <!-- 课表左侧时间 -->
       <view class="timetable-body-left">
         <view class="timetable-body-left-time" v-for="(item, index) in 10" :key="index">
@@ -160,9 +159,14 @@
       ]),
       // 课程背景样式
       bgImageStyle: function() {
-        let style = `background-color: #FFFFFF;`
+        const style = {
+          'background-color': '#FFFFFF'
+        }
         if (this.bgImage) {
-          style = `${style}background-image:url(${this.bgImage});color:#FFFFFF;`
+          Object.assign(style, {
+            'color': '#FFFFFF',
+            'background-image': `url(${this.bgImage})`
+          })
         }
         return style
       },
@@ -177,6 +181,10 @@
       }
     },
     watch: {
+      timetableList(newVal, oldVal) {
+        // 清除课程颜色缓存
+        this.colorMap.clear()
+      },
       colorArrayIndex(newVal, oldVal) {
         // 清除课程颜色缓存
         this.colorMap.clear()
@@ -265,6 +273,7 @@
           }
         }
         this.$store.commit('timetable/setTimetableList', timetableListTemp)
+        uni.setStorageSync('timetable', timetableListTemp)
       },
       /**
        * 删除课程
@@ -284,9 +293,11 @@
           success: (res) => {
             if (res.confirm) {
               for (let i = 0; i < weeks.length; i++) {
-                timetableListTemp[weeks[i] - 1][week - 1][Number.parseInt(start / 2)].splice(courseItemIndex, 1)
+                timetableListTemp[weeks[i] - 1][week - 1][Number.parseInt(start / 2)]
+                  .splice(courseItemIndex, 1)
               }
               this.$store.commit('timetable/setTimetableList', timetableListTemp)
+              uni.setStorageSync('timetable', timetableListTemp)
               this.showCourseCard = !this.showCourseCard
             } else {
               return
@@ -322,16 +333,15 @@
 
   .timetable-main {
     background-size: cover;
-    background-position: 0% 0%;
-    padding-bottom: 40rpx;
+    background-position: top center;
 
     .timetable-fixed {
       position: fixed;
-      top: 0;
       z-index: 100;
       width: 100%;
+      top: 0;
       background-size: cover;
-      background-position: 0% 0%;
+      background-position: top center;
     }
   }
 

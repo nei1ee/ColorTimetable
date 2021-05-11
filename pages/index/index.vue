@@ -21,7 +21,7 @@
       <button type="default" size="mini" @click="$store.commit('timetable/setColorArrayIndex', 0)">色卡1</button>
       <button type="default" size="mini" @click="$store.commit('timetable/setColorArrayIndex', 1)">色卡2</button>
       <button type="default" size="mini"
-        @click="bgImage ? $store.commit('timetable/setBgImage', '') : $store.commit('timetable/setBgImage', 'https://cdn.jsdelivr.net/gh/zguolee/cloud_images/background1.jpeg')">背景</button>
+        @click="bgImage ? $store.commit('timetable/setBgImage', '') : $store.commit('timetable/setBgImage', 'https://cdn.jsdelivr.net/gh/zguolee/cloud_images/background3.jpeg')">背景</button>
     </view>
   </view>
 </template>
@@ -56,7 +56,7 @@
 
       // console.log(JSON.stringify(timetableWeek))
       // 设置背景
-      this.$store.commit('timetable/setBgImage', 'https://cdn.jsdelivr.net/gh/zguolee/cloud_images/background1.jpeg')
+      this.$store.commit('timetable/setBgImage', 'https://cdn.jsdelivr.net/gh/zguolee/cloud_images/background3.jpeg')
     },
     computed: {
       style() {
@@ -65,7 +65,7 @@
         var bgImage = this.bgImage;
         var style = `height:${CustomBar - StatusBar}px;padding-top:${StatusBar}px;`;
         if (this.bgImage) {
-          style = `${style}background-image:url(${bgImage});`;
+          style = `${style}background-image:url(${bgImage});color:#FFFFFF;`;
         }
         return style
       },
@@ -95,7 +95,7 @@
     position: fixed;
     top: 0;
     z-index: 9999;
-    color: #FFFFFF;
+    color: #666666;
 
     .action {
       background-size: cover;
