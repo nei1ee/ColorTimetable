@@ -64,21 +64,6 @@ export default {
     },
     setTimetableList(state, timetableList) {
       state.timetableList = timetableList
-      // const timetableWeek = []
-      // for (let i = 0; i < timetableList.length; i++) {
-      //   timetableWeek.push([])
-      //   for (let j = 0; j < timetableList[i].length - 2; j++) {
-      //     timetableWeek[i].push([])
-      //     for (let k = 0; k < timetableList[i][j].length; k++) {
-      //       if (timetableList[i][j][k].length > 0) {
-      //         timetableWeek[i][j].push(1)
-      //       } else {
-      //         timetableWeek[i][j].push(0)
-      //       }
-      //     }
-      //   }
-      // }
-      // state.timetableWeek = timetableWeek
     },
     changeShowTimetableWeek(state) {
       state.showTimetableWeek = !state.showTimetableWeek

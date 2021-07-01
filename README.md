@@ -190,7 +190,4 @@ app.$mount()
 2. A 冲突课程折角
 3. A 周课表色卡切换
 
-## 致谢
-
-图标库使用[ColorUI](https://github.com/weilanwl/ColorUI)图标库
 

@@ -94,18 +94,18 @@
         </view>
         <view class="course-other">
           <view class="course-other-item">
-            <text class="cuIcon-location">{{ courseItem.location ? courseItem.location : '无' }}</text>
+            <text class="cIcon-location">{{ courseItem.location ? courseItem.location : '无' }}</text>
           </view>
           <view class="course-other-item">
-            <text class="cuIcon-people">{{ courseItem.teacher ? courseItem.teacher : '无'}}</text>
+            <text class="cIcon-people">{{ courseItem.teacher ? courseItem.teacher : '无'}}</text>
           </view>
           <view class="course-other-item">
-            <text class="cuIcon-time">{{ courseItem.time ? courseItem.time : '无'}}</text>
+            <text class="cIcon-time">{{ courseItem.time ? courseItem.time : '无'}}</text>
           </view>
           <view class="course-other-item">
-            <text class="cuIcon-evaluate"
+            <text class="cIcon-evaluate"
               style="margin-right: 20rpx;">{{`学时：${courseItem.period ? courseItem.period : '无'}`}}</text>
-            <text class="cuIcon-favor"> {{`学分：${ courseItem.credit ? courseItem.credit : '无'}`}}</text>
+            <text class="cIcon-favor"> {{`学分：${ courseItem.credit ? courseItem.credit : '无'}`}}</text>
           </view>
         </view>
         <view class="course-action">
