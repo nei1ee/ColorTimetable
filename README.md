@@ -2,7 +2,9 @@
 
 ## 界面预览
 
-![](https://cdn.jsdelivr.net/gh/zguolee/cloud_images/timetable-color.jpg)![](https://cdn.jsdelivr.net/gh/zguolee/cloud_images/timetable-feat.jpg)
+<img src="https://cdn.jsdelivr.net/gh/zguolee/cloud_images/timetable-color.jpg"  height="350"></img>
+</br>
+<img src="https://cdn.jsdelivr.net/gh/zguolee/cloud_images/timetable-feat.jpg" height="350"></img>
 
 ## 目录结构
 
@@ -166,7 +168,7 @@ app.$mount()
 
 ## 开源许可
 
-本项目使用开源许可证 License GPLv3 ，代码开源仅供学习交流，禁止私用、商用，违者必究。
+本项目使用开源许可证 License MIT ，代码开源仅供学习交流，禁止商用，违者必究。
 
 ## 更新日志
 
