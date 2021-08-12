@@ -15,7 +15,6 @@
 ├── README.md
 ├── components
 │   └── timetable
-│       ├── icon.css
 │       └── timetableBody.vue
 ├── main.js
 ├── manifest.json
@@ -24,12 +23,13 @@
 │       └── index.vue
 ├── pages.json
 ├── static
-│   ├── guest.js
 │   └── logo.png
 ├── store
 │   ├── index.js
 │   └── modules
 │       └── timetable.js
+├── styles
+│   └── icon.css
 └── uni.scss
 ```
 
@@ -72,7 +72,6 @@
 
 ## 使用方法
 
->  `static` 目录下 `guest.js`为测试课表文件
 1. 将 `components` 目录下 `timetable`文件夹拷贝至你所在的项目中
 2. 将 `store` 目录下 `modules` 文件夹拷贝至相应文件夹中
 3. 修改 `store.js` 文件添加以下代码
@@ -139,10 +138,18 @@ app.$mount()
       timetableBody
     },
     onLoad() {
-      // 设置开学时间
-      this.$store.commit('timetable/setStartDay', '2021/03/01 00:00:00')
-      // 初始化课表数据
-      this.$store.commit('timetable/setTimetableList', timetableData)
+      const someDate = new Date()
+      someDate.setDate(someDate.getDate() - 8 * 7)
+      // 设置开学时间 eg: 2021/03/01 00:00:00
+      this.$store.commit('timetable/setStartDay', someDate)
+      uni.request({
+        url: 'https://www.fastmock.site/mock/7074538d5f28bc8bcab58385107d778f/api/timetable',
+        success: res => {
+          const timetableData = res.data.data
+          // 初始化课表数据
+          this.$store.commit('timetable/setTimetableList', timetableData)
+        }
+      })
     },
     computed: {
       ...mapState('timetable', [
@@ -171,6 +178,11 @@ app.$mount()
 本项目使用开源许可证 License MIT ，代码开源仅供学习交流，禁止商用，违者必究。
 
 ## 更新日志
+
+#### Version 1.2.0
+
+1. F 使用 Mock 数据
+2. D 删除 static/guest.js 数据
 
 #### Version 1.1.0
 
