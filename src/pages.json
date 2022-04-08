@@ -1,0 +1,17 @@
+{
+  "globalStyle": {
+    "backgroundColor": "@navBgColor",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "navigationBarTextStyle": "@navTxtStyle",
+    "navigationBarTitleText": "uni-app",
+    "navigationStyle": "custom"
+  },
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "uni-app"
+      }
+    }
+  ]
+}

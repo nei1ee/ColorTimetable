@@ -1,0 +1,39 @@
+{
+  "name": "color-timetable",
+  "version": "0.0.0",
+  "scripts": {
+    "dev:custom": "uni -p",
+    "dev:h5": "uni",
+    "dev:h5:ssr": "uni --ssr",
+    "dev:mp-qq": "uni -p mp-qq",
+    "dev:mp-weixin": "uni -p mp-weixin",
+    "build:custom": "uni build -p",
+    "build:h5": "uni build",
+    "build:h5:ssr": "uni build --ssr",
+    "build:mp-qq": "uni build -p mp-qq",
+    "build:mp-weixin": "uni build -p mp-weixin"
+  },
+  "dependencies": {
+    "@dcloudio/uni-app": "3.0.0-alpha-3000020210521001",
+    "@dcloudio/uni-components": "^3.0.0-alpha-3040320220325006",
+    "@dcloudio/uni-h5": "^3.0.0-alpha-3040320220325006",
+    "@dcloudio/uni-mp-qq": "^3.0.0-alpha-3040320220325006",
+    "@dcloudio/uni-mp-weixin": "^3.0.0-alpha-3040320220325006",
+    "pinia": "^2.0.13",
+    "vue": "^3.2.31",
+    "vue-demi": "^0.12.5"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^0.20.2",
+    "@dcloudio/types": "^2.5.18",
+    "@dcloudio/vite-plugin-uni": "^3.0.0-alpha-3040320220325006",
+    "@iconify/json": "^2.1.23",
+    "@types/node": "^17.0.23",
+    "eslint": "^8.12.0",
+    "typescript": "^4.6.3",
+    "unocss": "^0.30.8",
+    "unplugin-auto-import": "^0.6.9",
+    "vite": "^2.9.1",
+    "vite-plugin-unocss-to-uni": "^0.0.3"
+  }
+}
