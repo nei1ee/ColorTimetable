@@ -23,7 +23,8 @@ export const useCourseStyleEffect = () => {
    * @returns course color
    */
   const getCourseBackgroundColor = (title: string) => {
-    if (!title) return '#FFFFFF'
+    if (!title)
+      return '#FFFFFF'
     if (!colorMap.has(title)) {
       const colorArray = colorList[0]
       let size = colorMap.size

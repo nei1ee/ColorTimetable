@@ -1,3 +1,97 @@
+<script setup lang="ts">
+import { useCourseStyleEffect, useCourseTimeEffect } from './homeEffect'
+import type { CourseModel } from '@/store/types'
+import { useAppStore } from '@/store/modules/app'
+import { useCourseStore } from '@/store/modules/course'
+
+const { courseTimeList, weekTitle } = useCourseTimeEffect()
+const { getCourseBackgroundColor, getCourseRowColumnStart2End } = useCourseStyleEffect()
+
+const appStore = useAppStore()
+const customStatusBarState = appStore.getCustomStatusBarState
+const darkMode = computed(() => appStore.getDarkMode)
+
+const showCourseAction = ref(false)
+
+const courseStore = useCourseStore()
+
+// mock api
+uni.request({
+  url: 'https://www.fastmock.site/mock/7074538d5f28bc8bcab58385107d778f/api/timetable',
+  success: (res: any) => {
+    // set class schedule data
+    courseStore.setCourseList(res.data.data as any)
+  },
+})
+
+// set the start date
+const someDate = new Date()
+someDate.setDate(someDate.getDate() - 8 * 7 + (someDate.getDay() + 1) % 7)
+courseStore.setStartDay(someDate)
+
+const semesterCourseList = computed(() => courseStore.getCourseList)
+const currentMonth = computed(() => courseStore.currentMonth)
+const originalWeekWeekIndx = computed(() => courseStore.getOriginalWeeksWeekIndex)
+const originalWeekIndex = computed(() => courseStore.originalWeekIndex)
+const currentWeekIndex = computed(() => courseStore.currentWeekIndex)
+const currentWeekDayArray = computed(() => courseStore.getCurrentWeekDayArray)
+
+const changeCurrentWeekIndex = (index: number) => {
+  courseStore.setCurrentWeekIndex(index)
+}
+
+const scrollLeft = () => {
+  if (originalWeekIndex.value === currentWeekIndex.value)
+    return originalWeekIndex.value * 60
+  return currentWeekIndex.value * 60
+}
+
+// handle course item click
+const isCourseItemClicked = ref(false)
+const currentCourseItem = ref<CourseModel[]>()
+const handleCourseItemClick = (dayCourse: CourseModel[]) => {
+  isCourseItemClicked.value = true
+  currentCourseItem.value = dayCourse
+}
+
+const setCourseItemTop = (courseItem: CourseModel, courseItemIndex: number) => {
+  if (!courseItemIndex)
+    return
+  const semesterCourseListTemp = Array.from(semesterCourseList.value)
+  const { start, week, weeks } = courseItem
+  for (let i = 0; i < weeks.length; i++) {
+    const dayDayCourse = semesterCourseListTemp[weeks[i] - 1][week - 1][Math.floor(start / 2)]
+    if (dayDayCourse.length > 1) {
+      const temp = dayDayCourse[courseItemIndex]
+      dayDayCourse.splice(courseItemIndex, 1)
+      dayDayCourse.unshift(temp)
+    }
+  }
+  courseStore.setCourseList(semesterCourseListTemp)
+}
+
+const deleteCourseItem = (courseItem: CourseModel, courseItemIndex: number) => {
+  const semesterCourseListTemp = Array.from(semesterCourseList.value)
+  const { start, week, weeks } = courseItem
+  uni.showModal({
+    title: '警告',
+    content: `确定删除该课程吗？\n此操作只会删除星期${week}的课时`,
+    success: (res) => {
+      if (res.confirm) {
+        for (let i = 0; i < weeks.length; i++) {
+          semesterCourseListTemp[weeks[i] - 1][week - 1][Math.floor(start / 2)].splice(
+            courseItemIndex,
+            1,
+          )
+        }
+        courseStore.setCourseList(semesterCourseListTemp)
+      }
+    },
+  })
+}
+
+</script>
+
 <template>
   <div class="font-mono" :class="darkMode ? 'dark' : ''">
     <div class="text-gray-500 dark:text-gray-200">
@@ -177,96 +271,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { useCourseStyleEffect, useCourseTimeEffect } from './homeEffect'
-import type { CourseModel } from '@/store/types'
-import { useAppStore } from '@/store/modules/app'
-import { useCourseStore } from '@/store/modules/course'
-
-const { courseTimeList, weekTitle } = useCourseTimeEffect()
-const { getCourseBackgroundColor, getCourseRowColumnStart2End } = useCourseStyleEffect()
-
-const appStore = useAppStore()
-const customStatusBarState = appStore.getCustomStatusBarState
-const darkMode = computed(() => appStore.getDarkMode)
-
-const showCourseAction = ref(false)
-
-const courseStore = useCourseStore()
-
-// mock api
-uni.request({
-  url: 'https://www.fastmock.site/mock/7074538d5f28bc8bcab58385107d778f/api/timetable',
-  success: (res: any) => {
-    // set class schedule data
-    courseStore.setCourseList(res.data.data as any)
-  },
-})
-
-// set the start date
-const someDate = new Date()
-someDate.setDate(someDate.getDate() - 8 * 7 + (someDate.getDay() + 1) % 7)
-courseStore.setStartDay(someDate)
-
-const semesterCourseList = computed(() => courseStore.getCourseList)
-const currentMonth = computed(() => courseStore.currentMonth)
-const originalWeekWeekIndx = computed(() => courseStore.getOriginalWeeksWeekIndex)
-const originalWeekIndex = computed(() => courseStore.originalWeekIndex)
-const currentWeekIndex = computed(() => courseStore.currentWeekIndex)
-const currentWeekDayArray = computed(() => courseStore.getCurrentWeekDayArray)
-
-const changeCurrentWeekIndex = (index: number) => {
-  courseStore.setCurrentWeekIndex(index)
-}
-
-const scrollLeft = () => {
-  if (originalWeekIndex.value === currentWeekIndex.value)
-    return originalWeekIndex.value * 60
-  return currentWeekIndex.value * 60
-}
-
-// handle course item click
-const isCourseItemClicked = ref(false)
-const currentCourseItem = ref<CourseModel[]>()
-const handleCourseItemClick = (dayCourse: CourseModel[]) => {
-  isCourseItemClicked.value = true
-  currentCourseItem.value = dayCourse
-}
-
-const setCourseItemTop = (courseItem: CourseModel, courseItemIndex: number) => {
-  if (!courseItemIndex) return
-  const semesterCourseListTemp = Array.from(semesterCourseList.value)
-  const { start, week, weeks } = courseItem
-  for (let i = 0; i < weeks.length; i++) {
-    const dayDayCourse = semesterCourseListTemp[weeks[i] - 1][week - 1][Math.floor(start / 2)]
-    if (dayDayCourse.length > 1) {
-      const temp = dayDayCourse[courseItemIndex]
-      dayDayCourse.splice(courseItemIndex, 1)
-      dayDayCourse.unshift(temp)
-    }
-  }
-  courseStore.setCourseList(semesterCourseListTemp)
-}
-
-const deleteCourseItem = (courseItem: CourseModel, courseItemIndex: number) => {
-  const semesterCourseListTemp = Array.from(semesterCourseList.value)
-  const { start, week, weeks } = courseItem
-  uni.showModal({
-    title: '警告',
-    content: `确定删除该课程吗？\n此操作只会删除星期${week}的课时`,
-    success: (res) => {
-      if (res.confirm) {
-        for (let i = 0; i < weeks.length; i++) {
-          semesterCourseListTemp[weeks[i] - 1][week - 1][Math.floor(start / 2)].splice(
-            courseItemIndex,
-            1,
-          )
-        }
-        courseStore.setCourseList(semesterCourseListTemp)
-      }
-    },
-  })
-}
-
-</script>
