@@ -5,13 +5,19 @@ import { useAppStore } from '@/store/modules/app'
 const appStore = useAppStore()
 
 onLaunch(() => {
+  // #ifdef MP-WEIXIN || MP-QQ
   const systemInfo: UniApp.GetSystemInfoResult & UniApp.OnThemeChangeCallbackResult = uni.getSystemInfoSync() as any
-  appStore.setDarkMode(systemInfo?.theme === 'dark')
-  appStore.setStatusBarHeight(systemInfo.statusBarHeight as number)
-  appStore.setMenuButtonBounding(uni.getMenuButtonBoundingClientRect() as any)
+  appStore.darkMode = systemInfo?.theme === 'dark'
+  appStore.statusBarHeight = systemInfo.statusBarHeight as number
+  appStore.menuButtonBounding = uni.getMenuButtonBoundingClientRect()
   uni.onThemeChange((res: UniApp.OnThemeChangeCallbackResult) => {
-    appStore.setDarkMode(res.theme === 'dark')
+    appStore.darkMode = res.theme === 'dark'
   })
+  // #endif
+  // #ifdef H5
+  appStore.statusBarHeight = 44
+  appStore.menuButtonBounding = { width: 87, height: 32, left: 281, top: 48, right: 368, bottom: 80 }
+  // #endif
 })
 onShow(() => {
 })

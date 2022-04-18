@@ -4,16 +4,13 @@ import type { CourseModel } from '@/store/types'
 import { useAppStore } from '@/store/modules/app'
 import { useCourseStore } from '@/store/modules/course'
 
+const appStore = useAppStore()
+const courseStore = useCourseStore()
+
 const { courseTimeList, weekTitle } = useCourseTimeEffect()
 const { getCourseBackgroundColor, getCourseRowColumnStart2End } = useCourseStyleEffect()
 
-const appStore = useAppStore()
-const customStatusBarState = appStore.getCustomStatusBarState
-const darkMode = computed(() => appStore.getDarkMode)
-
 const showCourseAction = ref(false)
-
-const courseStore = useCourseStore()
 
 // mock api
 uni.request({
@@ -93,43 +90,30 @@ const deleteCourseItem = (courseItem: CourseModel, courseItemIndex: number) => {
 </script>
 
 <template>
-  <div class="font-mono" :class="darkMode ? 'dark' : ''">
+  <div class="font-mono" :class="appStore.darkMode ? 'dark' : ''">
     <div class="text-gray-500 dark:text-gray-200">
       <!-- custom bar -->
       <div class="bg-white top-0 right-0 left-0 z-50 fixed dark:bg-#121212">
         <div
-          class="text-center"
-          :style="{
-            'padding-top': customStatusBarState.statusBarHeight + 'px',
-            height: (customStatusBarState.customBarHeight - customStatusBarState.statusBarHeight) + 'px'
+          class="text-center" :style="{
+            'padding-top': appStore.statusBarHeight + 'px',
+            height: (appStore.customBarHeight - appStore.statusBarHeight) + 'px'
           }"
         >
-          <div
-            class="flex h-full justify-center items-center"
-            @click="showCourseAction = !showCourseAction"
-          >
+          <div class="flex h-full justify-center items-center" @click="showCourseAction = !showCourseAction">
             {{ `第${currentWeekIndex + 1}周` }}
             <div :class="showCourseAction ? 'i-carbon-chevron-down' : 'i-carbon-chevron-up'" />
           </div>
         </div>
       </div>
-      <div
-        class="dark:bg-#121212"
-        :style="{ 'padding-top': customStatusBarState.customBarHeight + 'px' }"
-      >
+      <div class="dark:bg-#121212" :style="{ 'padding-top': appStore.customBarHeight + 'px' }">
         <!-- course action -->
         <scroll-view
-          v-if="showCourseAction"
-          class="text-center whitespace-nowrap"
-          scroll-x
-          scroll-with-animation
+          v-if="showCourseAction" class="text-center whitespace-nowrap" scroll-x scroll-with-animation
           :scroll-left="scrollLeft()"
         >
           <template v-for="(weeksTimetable, weeksIndex) in semesterCourseList" :key="weeksIndex">
-            <div
-              class="p-2 inline-block"
-              @click="changeCurrentWeekIndex(weeksIndex)"
-            >
+            <div class="p-2 inline-block" @click="changeCurrentWeekIndex(weeksIndex)">
               <div
                 class="rounded-lg py-1 px-2 dark:bg-opacity-50"
                 :class="originalWeekIndex === weeksIndex ? 'bg-gray-200' : currentWeekIndex === weeksIndex ? 'bg-gray-300 dark:bg-gray-500' : ''"
@@ -138,10 +122,7 @@ const deleteCourseItem = (courseItem: CourseModel, courseItemIndex: number) => {
                   {{ `第${weeksIndex + 1}周` }}
                 </div>
                 <div class="h-10 grid grid-flow-col w-10 grid-cols-5 grid-rows-5">
-                  <template
-                    v-for="(weekWeekTimetable, weekWeekIndex) in weeksTimetable"
-                    :key="weekWeekIndex"
-                  >
+                  <template v-for="(weekWeekTimetable, weekWeekIndex) in weeksTimetable" :key="weekWeekIndex">
                     <template v-if="weekWeekIndex < 5">
                       <template v-for="(item, index) in weekWeekTimetable" :key="index">
                         <div
@@ -165,8 +146,7 @@ const deleteCourseItem = (courseItem: CourseModel, courseItemIndex: number) => {
               </p>
             </div>
             <div
-              v-for="(item, index) in currentWeekDayArray"
-              :key="index"
+              v-for="(item, index) in currentWeekDayArray" :key="index"
               class="border-y-transparent border-x-none flex flex-col border-t-4 border-b-4 text-xs justify-evenly items-center"
               :class="originalWeekIndex === currentWeekIndex && originalWeekWeekIndx === index ? 'bg-light-blue-200 !border-b-light-blue-500 dark:bg-opacity-50' : ''"
             >
@@ -190,20 +170,15 @@ const deleteCourseItem = (courseItem: CourseModel, courseItemIndex: number) => {
                 </div>
               </div>
             </template>
-            <template
-              v-for="(weekCourse, weekIndex) in semesterCourseList[currentWeekIndex]"
-              :key="weekIndex"
-            >
+            <template v-for="(weekCourse, weekIndex) in semesterCourseList[currentWeekIndex]" :key="weekIndex">
               <template v-for="(dayCourse, dayIndex) in weekCourse" :key="dayIndex">
                 <div
                   v-if="dayCourse.length"
                   class="border-white rounded-lg border-2 border-opacity-50 text-center p-1 relative box-content"
-                  :style="[getCourseRowColumnStart2End(dayCourse[0]), `background-color: ${getCourseBackgroundColor(dayCourse[0].title)}${darkMode ? '50' : ''}`]"
+                  :style="[getCourseRowColumnStart2End(dayCourse[0]), `background-color: ${getCourseBackgroundColor(dayCourse[0].title)}${appStore.darkMode ? '50' : ''}`]"
                   @click="handleCourseItemClick(dayCourse)"
                 >
-                  <div
-                    class="flex flex-col h-full text-white text-xs w-full justify-around items-center"
-                  >
+                  <div class="flex flex-col h-full text-white text-xs w-full justify-around items-center">
                     <div class="font-medium">
                       {{ dayCourse[0]?.title }}
                     </div>
@@ -211,10 +186,7 @@ const deleteCourseItem = (courseItem: CourseModel, courseItemIndex: number) => {
                       <div class="text-8px i-carbon-location-current" />
                       {{ `${dayCourse[0]?.location}` }}
                     </div>
-                    <div
-                      v-if="dayCourse.length > 1"
-                      class="bg-white rounded h-1.5 top-1 right-1 w-1.5 absolute"
-                    />
+                    <div v-if="dayCourse.length > 1" class="bg-white rounded h-1.5 top-1 right-1 w-1.5 absolute" />
                   </div>
                 </div>
               </template>
@@ -228,8 +200,7 @@ const deleteCourseItem = (courseItem: CourseModel, courseItemIndex: number) => {
             <template v-for="(courseItem, index) in currentCourseItem" :key="index">
               <div
                 class="border-white rounded-xl border-2 border-opacity-50 text-white mb-10 p-6 pb-4 w-60% z-11 box-content"
-                :style="[`background-color: ${getCourseBackgroundColor(courseItem.title)}`]"
-                @click.stop
+                :style="[`background-color: ${getCourseBackgroundColor(courseItem.title)}`]" @click.stop
               >
                 <div class="font-medium text-lg text-center mb-4">
                   {{ courseItem.title }}
@@ -258,10 +229,7 @@ const deleteCourseItem = (courseItem: CourseModel, courseItemIndex: number) => {
                     @click="setCourseItemTop(courseItem, index)"
                   />
                   <div class="i-carbon-edit" />
-                  <div
-                    class="i-carbon-delete"
-                    @click="deleteCourseItem(courseItem, index)"
-                  />
+                  <div class="i-carbon-delete" @click="deleteCourseItem(courseItem, index)" />
                 </div>
               </div>
             </template>
