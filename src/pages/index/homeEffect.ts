@@ -1,21 +1,12 @@
-export const useCourseTimeEffect = () => {
-  const courseTimeList = [
-    { s: '08:00', e: '08:50' }, { s: '08:55', e: '09:45' },
-    { s: '10:15', e: '11:05' }, { s: '11:10', e: '12:00' },
-    { s: '14:00', e: '14:50' }, { s: '14:55', e: '15:45' },
-    { s: '16:15', e: '17:05' }, { s: '17:10', e: '18:00' },
-    { s: '19:00', e: '19:50' }, { s: '19:55', e: '20:45' },
-  ]
-  const weekTitle = ['一', '二', '三', '四', '五', '六', '日']
-  return { courseTimeList, weekTitle }
-}
+import { colorList, useCourseStore } from '@/store/modules/course'
+const courseStore = useCourseStore()
 
 export const useCourseStyleEffect = () => {
-  const colorList = [
-    ['#FFDC72', '#CE7CF4', '#FF7171', '#66CC99', '#FF9966', '#66CCCC', '#6699CC', '#99CC99', '#669966', '#66CCFF', '#99CC66', '#FF9999', '#81CC74'],
-    ['#99CCFF', '#FFCC99', '#CCCCFF', '#99CCCC', '#A1D699', '#7397db', '#ff9983', '#87D7EB', '#99CC99'],
-  ]
-  const colorMap = new Map()
+  const colorMap = new Map<string, string>()
+
+  watch(() => courseStore.colorIndex, () => {
+    colorMap.clear()
+  })
 
   /**
    * get course item background color
@@ -26,7 +17,7 @@ export const useCourseStyleEffect = () => {
     if (!title)
       return '#FFFFFF'
     if (!colorMap.has(title)) {
-      const colorArray = colorList[0]
+      const colorArray = colorList[courseStore.colorIndex]
       let size = colorMap.size
       size = size >= colorArray.length ? 0 : size
       colorMap.set(title, colorArray[size])

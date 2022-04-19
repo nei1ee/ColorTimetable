@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { useCourseStyleEffect, useCourseTimeEffect } from './homeEffect'
-import type { CourseModel } from '@/store/types'
+import { useCourseStyleEffect } from './homeEffect'
 import { useAppStore } from '@/store/modules/app'
-import { useCourseStore } from '@/store/modules/course'
+import { courseTimeList, useCourseStore, weekTitle } from '@/store/modules/course'
+import type { CourseList, CourseModel } from '@/store/modules/course'
 
 const appStore = useAppStore()
 const courseStore = useCourseStore()
 
-const { courseTimeList, weekTitle } = useCourseTimeEffect()
-const { getCourseBackgroundColor, getCourseRowColumnStart2End } = useCourseStyleEffect()
+const { getCourseRowColumnStart2End, getCourseBackgroundColor } = useCourseStyleEffect()
 
 const showCourseAction = ref(false)
 
@@ -16,26 +15,24 @@ const showCourseAction = ref(false)
 uni.request({
   url: 'https://www.fastmock.site/mock/7074538d5f28bc8bcab58385107d778f/api/timetable',
   success: (res: any) => {
-    // set class schedule data
-    courseStore.setCourseList(res.data.data as any)
+    // set semester course data
+    courseStore.semesterCourseList = res.data.data as CourseList
   },
 })
 
 // set the start date
 const someDate = new Date()
+// ` - 8 * 7 + (someDate.getDay() + 1) % 7` just to fix the current week
 someDate.setDate(someDate.getDate() - 8 * 7 + (someDate.getDay() + 1) % 7)
 courseStore.setStartDay(someDate)
 
-const semesterCourseList = computed(() => courseStore.getCourseList)
-const currentMonth = computed(() => courseStore.currentMonth)
-const originalWeekWeekIndx = computed(() => courseStore.getOriginalWeeksWeekIndex)
-const originalWeekIndex = computed(() => courseStore.originalWeekIndex)
-const currentWeekIndex = computed(() => courseStore.currentWeekIndex)
-const currentWeekDayArray = computed(() => courseStore.getCurrentWeekDayArray)
-
-const changeCurrentWeekIndex = (index: number) => {
-  courseStore.setCurrentWeekIndex(index)
-}
+const {
+  currentMonth,
+  originalWeeksWeekIndex,
+  originalWeekIndex,
+  currentWeekIndex,
+  currentWeekDayArray,
+} = toRefs(courseStore)
 
 const scrollLeft = () => {
   if (originalWeekIndex.value === currentWeekIndex.value)
@@ -54,21 +51,18 @@ const handleCourseItemClick = (dayCourse: CourseModel[]) => {
 const setCourseItemTop = (courseItem: CourseModel, courseItemIndex: number) => {
   if (!courseItemIndex)
     return
-  const semesterCourseListTemp = Array.from(semesterCourseList.value)
   const { start, week, weeks } = courseItem
   for (let i = 0; i < weeks.length; i++) {
-    const dayDayCourse = semesterCourseListTemp[weeks[i] - 1][week - 1][Math.floor(start / 2)]
+    const dayDayCourse = courseStore.semesterCourseList[weeks[i] - 1][week - 1][Math.floor(start / 2)]
     if (dayDayCourse.length > 1) {
       const temp = dayDayCourse[courseItemIndex]
       dayDayCourse.splice(courseItemIndex, 1)
       dayDayCourse.unshift(temp)
     }
   }
-  courseStore.setCourseList(semesterCourseListTemp)
 }
 
 const deleteCourseItem = (courseItem: CourseModel, courseItemIndex: number) => {
-  const semesterCourseListTemp = Array.from(semesterCourseList.value)
   const { start, week, weeks } = courseItem
   uni.showModal({
     title: '警告',
@@ -76,12 +70,12 @@ const deleteCourseItem = (courseItem: CourseModel, courseItemIndex: number) => {
     success: (res) => {
       if (res.confirm) {
         for (let i = 0; i < weeks.length; i++) {
-          semesterCourseListTemp[weeks[i] - 1][week - 1][Math.floor(start / 2)].splice(
-            courseItemIndex,
-            1,
-          )
+          courseStore.semesterCourseList[weeks[i] - 1][week - 1][Math.floor(start / 2)]
+            .splice(
+              courseItemIndex,
+              1,
+            )
         }
-        courseStore.setCourseList(semesterCourseListTemp)
       }
     },
   })
@@ -112,8 +106,8 @@ const deleteCourseItem = (courseItem: CourseModel, courseItemIndex: number) => {
           v-if="showCourseAction" class="text-center whitespace-nowrap" scroll-x scroll-with-animation
           :scroll-left="scrollLeft()"
         >
-          <template v-for="(weeksTimetable, weeksIndex) in semesterCourseList" :key="weeksIndex">
-            <div class="p-2 inline-block" @click="changeCurrentWeekIndex(weeksIndex)">
+          <template v-for="(weeksTimetable, weeksIndex) of courseStore.semesterCourseList" :key="weeksIndex">
+            <div class="p-2 inline-block" @click="courseStore.setCurrentWeekIndex(weeksIndex)">
               <div
                 class="rounded-lg py-1 px-2 dark:bg-opacity-50"
                 :class="originalWeekIndex === weeksIndex ? 'bg-gray-200' : currentWeekIndex === weeksIndex ? 'bg-gray-300 dark:bg-gray-500' : ''"
@@ -122,9 +116,9 @@ const deleteCourseItem = (courseItem: CourseModel, courseItemIndex: number) => {
                   {{ `第${weeksIndex + 1}周` }}
                 </div>
                 <div class="h-10 grid grid-flow-col w-10 grid-cols-5 grid-rows-5">
-                  <template v-for="(weekWeekTimetable, weekWeekIndex) in weeksTimetable" :key="weekWeekIndex">
+                  <template v-for="(weekWeekTimetable, weekWeekIndex) of weeksTimetable" :key="weekWeekIndex">
                     <template v-if="weekWeekIndex < 5">
-                      <template v-for="(item, index) in weekWeekTimetable" :key="index">
+                      <template v-for="(item, index) of weekWeekTimetable" :key="index">
                         <div
                           class="rounded-full mx-auto bg-gray-100 h-1.5 w-1.5"
                           :class="item.length >= 1 ? '!bg-light-blue-500' : ''"
@@ -148,7 +142,7 @@ const deleteCourseItem = (courseItem: CourseModel, courseItemIndex: number) => {
             <div
               v-for="(item, index) in currentWeekDayArray" :key="index"
               class="border-y-transparent border-x-none flex flex-col border-t-4 border-b-4 text-xs justify-evenly items-center"
-              :class="originalWeekIndex === currentWeekIndex && originalWeekWeekIndx === index ? 'bg-light-blue-200 !border-b-light-blue-500 dark:bg-opacity-50' : ''"
+              :class="originalWeekIndex === currentWeekIndex && originalWeeksWeekIndex === index ? 'bg-light-blue-200 !border-b-light-blue-500 dark:bg-opacity-50' : ''"
             >
               <p class="font-medium">
                 {{ weekTitle[index] }}
@@ -170,8 +164,8 @@ const deleteCourseItem = (courseItem: CourseModel, courseItemIndex: number) => {
                 </div>
               </div>
             </template>
-            <template v-for="(weekCourse, weekIndex) in semesterCourseList[currentWeekIndex]" :key="weekIndex">
-              <template v-for="(dayCourse, dayIndex) in weekCourse" :key="dayIndex">
+            <template v-for="(weekCourse, weekIndex) of courseStore.semesterCourseList[currentWeekIndex]" :key="weekIndex">
+              <template v-for="(dayCourse, dayIndex) of weekCourse" :key="dayIndex">
                 <div
                   v-if="dayCourse.length"
                   class="border-white rounded-lg border-2 border-opacity-50 text-center p-1 relative box-content"
@@ -197,7 +191,7 @@ const deleteCourseItem = (courseItem: CourseModel, courseItemIndex: number) => {
             class="flex flex-col bg-dark-100 bg-opacity-50 top-0 right-0 bottom-0 left-0 z-10 absolute justify-center items-center"
             @click="isCourseItemClicked = false"
           >
-            <template v-for="(courseItem, index) in currentCourseItem" :key="index">
+            <template v-for="(courseItem, index) of currentCourseItem" :key="index">
               <div
                 class="border-white rounded-xl border-2 border-opacity-50 text-white mb-10 p-6 pb-4 w-60% z-11 box-content"
                 :style="[`background-color: ${getCourseBackgroundColor(courseItem.title)}`]" @click.stop

@@ -1,32 +1,61 @@
 import { defineStore } from 'pinia'
-import type { CourseList } from '../types'
 import { store } from '@/store'
-
-type Nullable<T> = T | null
-
-interface CourseState {
-  startDate: Date | string
-  courseList: Nullable<CourseList>
-  currentMonth: number
-  originalWeekIndex: number
-  currentWeekIndex: number
-  colorIndex: number
+export interface CourseModel {
+  // 课程名
+  title: string
+  // 地点
+  location: string
+  // 上课时间
+  time: string
+  // 开始节次
+  start: number
+  // 持续节次
+  duration: number
+  // 上课周数
+  week: number
+  // 上课周次
+  weeks: []
+  // 教师
+  teacher?: string
+  // 学分
+  credit: number
+  // 学时
+  period: number
 }
 
-export const useCourseStore = defineStore({
-  id: 'course',
-  state: (): CourseState => ({
-    startDate: '',
-    currentMonth: -1,
-    originalWeekIndex: -1,
-    currentWeekIndex: -1,
-    courseList: null,
-    colorIndex: -1,
-  }),
-  getters: {
-    getCurrentWeekDayArray(): number[] {
-      const weekIndex = this.currentWeekIndex
-      const someDate = new Date(this.startDate)
+export type CourseList = CourseModel[][][][]
+
+export const colorList = [
+  ['#FFDC72', '#CE7CF4', '#FF7171', '#66CC99', '#FF9966', '#66CCCC', '#6699CC', '#99CC99', '#669966', '#66CCFF', '#99CC66', '#FF9999', '#81CC74'],
+  ['#99CCFF', '#FFCC99', '#CCCCFF', '#99CCCC', '#A1D699', '#7397db', '#ff9983', '#87D7EB', '#99CC99'],
+]
+
+export const courseTimeList = [
+  { s: '08:00', e: '08:50' }, { s: '08:55', e: '09:45' },
+  { s: '10:15', e: '11:05' }, { s: '11:10', e: '12:00' },
+  { s: '14:00', e: '14:50' }, { s: '14:55', e: '15:45' },
+  { s: '16:15', e: '17:05' }, { s: '17:10', e: '18:00' },
+  { s: '19:00', e: '19:50' }, { s: '19:55', e: '20:45' },
+]
+
+export const weekTitle = ['一', '二', '三', '四', '五', '六', '日']
+
+export const useCourseStore = defineStore(
+  'course',
+  () => {
+    const startDate = ref<Date | string>(new Date())
+    const semesterCourseList = ref<CourseList>([])
+    const currentMonth = ref<number>(0)
+    const originalWeekIndex = ref<number>(0)
+    const currentWeekIndex = ref<number>(0)
+    const colorIndex = ref<number>(0)
+
+    const originalWeeksWeekIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1
+    // getters
+
+    function getCurrentWeekDayArray(): number[] {
+      const weekIndex = currentWeekIndex.value
+      const someDate = new Date(startDate.value)
       someDate.setDate(someDate.getDate() + weekIndex * 7)
       const dayArray: number[] = []
       dayArray.push(someDate.getDate())
@@ -35,36 +64,46 @@ export const useCourseStore = defineStore({
         dayArray.push(someDate.getDate())
       }
       return dayArray
-    },
-    getOriginalWeeksWeekIndex(): number {
-      const week = new Date().getDay()
-      return week === 0 ? 6 : week - 1
-    },
-    getCourseList(): CourseList {
-      return this.courseList || []
-    },
-  },
-  actions: {
-    setStartDay(startDate: string | Date) {
-      this.startDate = new Date(startDate)
+    }
+
+    const currentWeekDayArray = computed(() => getCurrentWeekDayArray())
+
+    // actions
+    /**
+     * set start date
+     * @param someDate the start date of the semester
+     */
+    function setStartDay(someDate: string | Date) {
+      startDate.value = new Date(someDate)
       // set original week index
-      const days = new Date().getTime() - this.startDate.getTime()
-      this.originalWeekIndex = Math.floor((days / (1000 * 60 * 60 * 24)) / 7)
+      const days = new Date().getTime() - startDate.value.getTime()
+      originalWeekIndex.value = Math.floor((days / (1000 * 60 * 60 * 24)) / 7)
       // set current week index
-      this.setCurrentWeekIndex(this.originalWeekIndex)
-    },
-    setCurrentWeekIndex(weekIndex: number) {
-      this.currentWeekIndex = weekIndex
+      setCurrentWeekIndex(originalWeekIndex.value)
+    }
+
+    function setCurrentWeekIndex(weekIndex: number) {
+      currentWeekIndex.value = weekIndex
       // change current month
-      const someDate = new Date(this.startDate)
+      const someDate = new Date(startDate.value)
       someDate.setDate(someDate.getDate() + weekIndex * 7)
-      this.currentMonth = someDate.getMonth() + 1
-    },
-    setCourseList(info: CourseList) {
-      this.courseList = info
-    },
+      currentMonth.value = someDate.getMonth() + 1
+    }
+
+    return {
+      startDate,
+      currentMonth,
+      semesterCourseList,
+      originalWeekIndex,
+      originalWeeksWeekIndex,
+      currentWeekIndex,
+      currentWeekDayArray,
+      colorIndex,
+      setStartDay,
+      setCurrentWeekIndex,
+    }
   },
-})
+)
 
 // Need to be used outside the setup
 export function useCourseStoreWidthOut() {
