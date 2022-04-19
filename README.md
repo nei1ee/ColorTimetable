@@ -46,64 +46,53 @@
 <br>
 
 
-## 使用方法
+## Install and use
 
 [uni-app 项目支持 vue 3.0 介绍，及升级指南](https://ask.dcloud.net.cn/article/37834)
 
-### 课表数据说明
+- Get the project code
 
-```javascript
-[
-  // 第一周课表
-  [
-    // 周一课表
-    [
-      // 节次 1-2 课表
-      [
-        // 课程 1
-        {课程1},
-        // 冲突课程 2
-        {课程2}
-      ],
-      // 节次 3-4 课表
-      [
-        {课程1}
-      ],
-      // 节次 5-6 课表
-      [],
-      ...
-    ],
-    // 周二课表
-    [],
-    // 周三课表
-    [],
-    ...
-  ],
-  // 第二周课表
-  [],
-  // 第三周课表
-  [],
-  ...
-]
+```
+git clone https://github.com/zguolee/ColorTimetable.git
 ```
 
-<br>
+- Installation dependencies
+  
+```
+cd ColorTimetable
 
-## 更新日志
+pnpm install
+```
+
+- Run
+
+```
+pnpm run dev:mp-weixin
+```
+
+- Build
+
+```
+pnpm run build:mp-weixin
+```
+
+
+
+## Change Log
 
 ### Version 2.0.0
 
-1. F 升级到 Vue 3
+1. F Upgrade Vue3
 
-2. F 深色主题
+2. F Dark theme
 
 ### Version 1.x
 
-[ColorTimetable Vue2版本](https://github.com/zguolee/ColorTimetable/tree/vue2)
+[ColorTimetable Vue2](https://github.com/zguolee/ColorTimetable/tree/vue2)
 
 
 <br>
 
-## 开源许可
+## License
 
-本项目使用开源许可证 License MIT ，代码开源仅供学习交流。
+[MIT](./LICENSE) License © 2021-PRESENT [Neil](https://github.com/zguolee)
