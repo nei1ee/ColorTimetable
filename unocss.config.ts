@@ -36,9 +36,6 @@ export default defineConfig({
     transformerDirectives(),
     transformerVariantGroup(),
   ],
-  variants: [
-    // ...uniVariants
-  ],
   postprocess: (t) => {
     t.selector = unocssToUniProcess(t.selector)
     return t

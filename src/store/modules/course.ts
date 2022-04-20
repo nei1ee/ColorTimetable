@@ -25,6 +25,8 @@ export interface CourseModel {
 
 export type CourseList = CourseModel[][][][]
 
+const colorMap = new Map<string, string>()
+
 export const colorList = [
   ['#FFDC72', '#CE7CF4', '#FF7171', '#66CC99', '#FF9966', '#66CCCC', '#6699CC', '#99CC99', '#669966', '#66CCFF', '#99CC66', '#FF9999', '#81CC74'],
   ['#99CCFF', '#FFCC99', '#CCCCFF', '#99CCCC', '#A1D699', '#7397db', '#ff9983', '#87D7EB', '#99CC99'],
@@ -90,6 +92,27 @@ export const useCourseStore = defineStore(
       currentMonth.value = someDate.getMonth() + 1
     }
 
+    watch(() => colorIndex.value, () => {
+      colorMap.clear()
+    })
+
+    /**
+     * get course item background color
+     * @param title course title
+     * @returns course color
+     */
+    const getCourseBgColor = (title: string) => {
+      if (!title)
+        return '#FFFFFF'
+      if (!colorMap.has(title)) {
+        const colorArray = colorList[colorIndex.value]
+        let size = colorMap.size
+        size = size >= colorArray.length ? 0 : size
+        colorMap.set(title, colorArray[size])
+      }
+      return colorMap.get(title)
+    }
+
     return {
       startDate,
       currentMonth,
@@ -101,6 +124,7 @@ export const useCourseStore = defineStore(
       colorIndex,
       setStartDay,
       setCurrentWeekIndex,
+      getCourseBgColor,
     }
   },
 )
