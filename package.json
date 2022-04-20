@@ -34,6 +34,6 @@
     "unocss": "^0.31.0",
     "unplugin-auto-import": "^0.7.0",
     "vite": "^2.9.1",
-    "vite-plugin-unocss-to-uni": "^0.0.10"
+    "vite-plugin-unocss-to-uni": "0.0.11"
   }
 }
