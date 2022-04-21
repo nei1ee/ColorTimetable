@@ -3,7 +3,7 @@ import { useAppStore } from '@/store/modules/app'
 import { useCourseStore } from '@/store/modules/course'
 import type { CourseList, CourseModel } from '@/store/modules/course'
 import TimetableAction from '@/components/timetable/TimetableAction.vue'
-import TimetableBody from '@/components/timetable/TimetableBody.vue'
+import TimetableContent from '@/components/timetable/TimetableContent.vue'
 
 const appStore = useAppStore()
 const courseStore = useCourseStore()
@@ -65,7 +65,10 @@ const deleteCourseItem = (courseItem: CourseModel, courseItemIndex: number) => {
 </script>
 
 <template>
-  <div class="font-mono" :class="appStore.darkMode ? 'dark' : ''">
+  <div
+    class="font-mono" :class="appStore.darkMode ? 'dark' : ''"
+    :style="{ 'padding-top': appStore.customBarHeight + 'px' }"
+  >
     <div class="text-gray-500 dark:text-gray-200 relative dark:bg-#121212">
       <!-- custom bar -->
       <div class="bg-white top-0 right-0 left-0 z-50 fixed dark:bg-#121212">
@@ -82,7 +85,7 @@ const deleteCourseItem = (courseItem: CourseModel, courseItemIndex: number) => {
         </div>
       </div>
       <TimetableAction :show-course-action="showCourseAction" />
-      <TimetableBody @handle-course-item-click="handleCourseItemClick" />
+      <TimetableContent @handle-course-item-click="handleCourseItemClick" />
       <div
         v-if="isCourseItemClicked"
         class="flex flex-col bg-dark-100 bg-opacity-50 top-0 right-0 bottom-0 left-0 z-10 absolute justify-center items-center"
