@@ -3,7 +3,6 @@ import { defineConfig } from 'vite'
 import uni from '@dcloudio/vite-plugin-uni'
 import Unocss from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
-import Components from 'unplugin-vue-components/vite'
 import { UnocssToUni } from 'vite-plugin-unocss-to-uni'
 import Inspect from 'vite-plugin-inspect'
 
@@ -34,15 +33,6 @@ export default defineConfig({
         'pinia',
       ],
       dts: 'src/auto-imports.d.ts',
-    }),
-
-    // https://github.com/antfu/unplugin-vue-components
-    Components({
-      // allow auto load markdown components under `./src/components/`
-      extensions: ['vue', 'md'],
-      // allow auto import and register components used in markdown
-      include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
-      dts: 'src/components.d.ts',
     }),
 
     // https://github.com/antfu/vite-plugin-inspect
