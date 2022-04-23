@@ -42,7 +42,7 @@ const emit = defineEmits(['handleCourseItemClick'])
       <template v-for="(dayCourse, dayIndex) of weekCourse" :key="dayIndex">
         <div
           v-if="dayCourse.length"
-          class="border-white rounded-lg border-2 border-opacity-50 text-center p-1 relative box-content col-span-1"
+          class="border-white rounded-lg border-2 border-opacity-50 text-center p-1 col-span-1 relative box-content"
           :style="[getCoursePosition(dayCourse[0]), `background-color: ${courseStore.getCourseBgColor(dayCourse[0].title)}${appStore.darkMode ? '50' : ''}`]"
           @click="emit('handleCourseItemClick', dayCourse)"
         >

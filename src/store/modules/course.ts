@@ -101,7 +101,7 @@ export const useCourseStore = defineStore(
      * @param title course title
      * @returns course color
      */
-    const getCourseBgColor = (title: string) => {
+    function getCourseBgColor(title: string) {
       if (!title)
         return '#FFFFFF'
       if (!colorMap.has(title)) {
@@ -111,6 +111,38 @@ export const useCourseStore = defineStore(
         colorMap.set(title, colorArray[size])
       }
       return colorMap.get(title)
+    }
+
+    /**
+     * set a course item to top when there has two course in the same time
+     * @param courseItem course item
+     * @param courseItemIndex course item index in one day
+     */
+    function setCourseItemTop(courseItem: CourseModel, courseItemIndex: number) {
+      if (!courseItemIndex)
+        return
+      const { start, week, weeks } = courseItem
+      for (let i = 0; i < weeks.length; i++) {
+        const dayDayCourse = semesterCourseList.value[weeks[i] - 1][week - 1][Math.floor(start / 2)]
+        if (dayDayCourse.length > 1) {
+          const temp = dayDayCourse[courseItemIndex]
+          dayDayCourse.splice(courseItemIndex, 1)
+          dayDayCourse.unshift(temp)
+        }
+      }
+    }
+
+    /**
+     * delete a course item
+     * @param courseItem course item
+     * @param courseItemIndex course item index in one day
+     */
+    function handleDeleteCourseItem(courseItem: CourseModel, courseItemIndex: number) {
+      const { start, week, weeks } = courseItem
+      for (let i = 0; i < weeks.length; i++) {
+        semesterCourseList.value[weeks[i] - 1][week - 1][Math.floor(start / 2)]
+          .splice(courseItemIndex, 1)
+      }
     }
 
     return {
@@ -125,6 +157,8 @@ export const useCourseStore = defineStore(
       setStartDay,
       setCurrentWeekIndex,
       getCourseBgColor,
+      setCourseItemTop,
+      handleDeleteCourseItem,
     }
   },
 )

@@ -24,14 +24,14 @@ watch(
 
 <template>
   <scroll-view
-    class="overflow-hidden whitespace-nowrap transition-height duration-300" scroll-x scroll-with-animation
+    class="transition-height duration-300 overflow-hidden whitespace-nowrap" scroll-x scroll-with-animation
     :scroll-into-view="scrollTo"
     :class="showCourseAction ? 'h-20' : 'h-0'"
   >
     <template v-for="(weeksTimetable, weeksIndex) of courseStore.semesterCourseList" :key="weeksIndex">
       <div
         :id="`week${weeksIndex+1}`"
-        class="p-2 inline-block text-center"
+        class="text-center p-2 inline-block"
         @click="courseStore.setCurrentWeekIndex(weeksIndex)"
       >
         <div
