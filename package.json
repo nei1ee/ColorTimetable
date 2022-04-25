@@ -24,7 +24,7 @@
     "vue-demi": "^0.12.5"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^0.20.6",
+    "@antfu/eslint-config": "0.21.0",
     "@dcloudio/types": "^2.6.4",
     "@dcloudio/vite-plugin-uni": "^3.0.0-alpha-3040520220408002",
     "@iconify-json/carbon": "^1.1.3",
