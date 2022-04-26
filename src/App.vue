@@ -15,6 +15,11 @@ onLaunch(() => {
   })
   // #endif
   // #ifdef H5
+  const colorScheme = window.matchMedia('(prefers-color-scheme: dark)')
+  appStore.darkMode = colorScheme.matches
+  colorScheme.addEventListener('change', (e: MediaQueryListEvent) => {
+    appStore.darkMode = e.matches
+  })
   appStore.statusBarHeight = 44
   appStore.menuButtonBounding = { width: 87, height: 32, left: 281, top: 48, right: 368, bottom: 80 }
   // #endif
