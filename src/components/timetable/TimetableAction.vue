@@ -1,14 +1,9 @@
 <script setup lang="ts">
 import { useCourseStore } from '@/store/modules/course'
 
-const courseStore = useCourseStore()
+const props = defineProps<{ showCourseAction: boolean }>()
 
-const props = defineProps({
-  showCourseAction: {
-    type: Boolean,
-    default: false,
-  },
-})
+const courseStore = useCourseStore()
 
 const { originalWeekIndex, currentWeekIndex } = toRefs(courseStore)
 
@@ -30,7 +25,7 @@ watch(
   >
     <template v-for="(weeksTimetable, weeksIndex) of courseStore.semesterCourseList" :key="weeksIndex">
       <div
-        :id="`week${weeksIndex+1}`"
+        :id="`week${weeksIndex + 1}`"
         class="text-center p-2 inline-block"
         @click="courseStore.setCurrentWeekIndex(weeksIndex)"
       >

@@ -137,7 +137,7 @@ export const useCourseStore = defineStore(
      * @param courseItem course item
      * @param courseItemIndex course item index in one day
      */
-    function handleDeleteCourseItem(courseItem: CourseModel, courseItemIndex: number) {
+    function deleteCourseItem(courseItem: CourseModel, courseItemIndex: number) {
       const { start, week, weeks } = courseItem
       for (let i = 0; i < weeks.length; i++) {
         semesterCourseList.value[weeks[i] - 1][week - 1][Math.floor(start / 2)]
@@ -158,7 +158,7 @@ export const useCourseStore = defineStore(
       setCurrentWeekIndex,
       getCourseBgColor,
       setCourseItemTop,
-      handleDeleteCourseItem,
+      deleteCourseItem,
     }
   },
 )

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useCourseStore, weekTitle } from '@/store/modules/course'
+
 const courseStore = useCourseStore()
 
 const {
@@ -12,7 +13,7 @@ const {
 </script>
 
 <template>
-  <div class="shadow-sm grid px-1 gap-1 grid-cols-[0.7fr_repeat(7,1fr)]">
+  <div class="bg-white shadow-sm grid px-1 top-0 z-10 gap-1 grid-cols-[0.7fr_repeat(7,1fr)] sticky">
     <div class="flex font-medium text-sm items-center justify-center">
       {{ `${currentMonth}月` }}
     </div>
@@ -28,6 +29,3 @@ const {
     </div>
   </div>
 </template>
-<style scoped>
-
-</style>
