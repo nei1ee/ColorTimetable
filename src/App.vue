@@ -14,14 +14,16 @@ onLaunch(() => {
     appStore.darkMode = res.theme === 'dark'
   })
   // #endif
+
   // #ifdef H5
   const colorScheme = window.matchMedia('(prefers-color-scheme: dark)')
   appStore.darkMode = colorScheme.matches
   colorScheme.addEventListener('change', (e: MediaQueryListEvent) => {
     appStore.darkMode = e.matches
   })
-  appStore.statusBarHeight = 44
-  appStore.menuButtonBounding = { width: 87, height: 32, left: 281, top: 48, right: 368, bottom: 80 }
+  // The data is obtained from iphone13 miniprogram but statusBarHeight, top and bottom values are subtracted from the statusBarHeight value
+  appStore.statusBarHeight = 0
+  appStore.menuButtonBounding = { width: 87, height: 32, left: 281, top: 4, right: 368, bottom: 36 }
   // #endif
 })
 onShow(() => {
@@ -29,4 +31,5 @@ onShow(() => {
 onHide(() => {
 })
 </script>
+
 <style></style>
