@@ -1,36 +1,21 @@
 import { defineStore } from 'pinia'
 import { store } from '@/store'
+
 export interface CourseModel {
-  // 课程名
   title: string
-  // 地点
   location: string
-  // 上课时间
   time: string
-  // 开始节次
   start: number
-  // 持续节次
   duration: number
-  // 上课周数
+  // [1-7]
   week: number
-  // 上课周次
-  weeks: []
-  // 教师
-  teacher?: string
-  // 学分
-  credit: number
-  // 学时
-  period: number
+  // [[1-20]]
+  weeks: number[]
+  top: boolean
+  bgColor?: string
 }
 
-export type CourseList = CourseModel[][][][]
-
-const colorMap = new Map<string, string>()
-
-export const colorList = [
-  ['#FFDC72', '#CE7CF4', '#FF7171', '#66CC99', '#FF9966', '#66CCCC', '#6699CC', '#99CC99', '#669966', '#66CCFF', '#99CC66', '#FF9999', '#81CC74'],
-  ['#99CCFF', '#FFCC99', '#CCCCFF', '#99CCCC', '#A1D699', '#7397db', '#ff9983', '#87D7EB', '#99CC99'],
-]
+export const weekTitle = ['一', '二', '三', '四', '五', '六', '日']
 
 export const courseTimeList = [
   { s: '08:00', e: '08:50' }, { s: '08:55', e: '09:45' },
@@ -40,22 +25,62 @@ export const courseTimeList = [
   { s: '19:00', e: '19:50' }, { s: '19:55', e: '20:45' },
 ]
 
-export const weekTitle = ['一', '二', '三', '四', '五', '六', '日']
+const colorMap = new Map<string, string>()
+
+export const colorList = [
+  ['#FFDC72', '#CE7CF4', '#FF7171', '#66CC99', '#FF9966', '#66CCCC', '#6699CC', '#99CC99', '#669966', '#66CCFF', '#99CC66', '#FF9999', '#81CC74'],
+  ['#99CCFF', '#FFCC99', '#CCCCFF', '#99CCCC', '#A1D699', '#7397db', '#ff9983', '#87D7EB', '#99CC99'],
+]
+
+const conflictCourseMap = new Map<CourseModel, CourseModel[]>()
 
 export const useCourseStore = defineStore(
   'course',
   () => {
     const startDate = ref<Date | string>(new Date())
-    const semesterCourseList = ref<CourseList>([])
+    const semesterCourseList = ref<CourseModel[]>([])
     const currentMonth = ref<number>(0)
     const originalWeekIndex = ref<number>(0)
     const currentWeekIndex = ref<number>(0)
     const colorIndex = ref<number>(0)
 
     const originalWeeksWeekIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1
-    // getters
 
-    function getCurrentWeekDayArray(): number[] {
+    function setSemesterCourseList(courseList: CourseModel[]) {
+      colorMap.clear()
+      conflictCourseMap.clear()
+      for (const courseItem of courseList)
+        Object.assign(courseItem, { bgColor: getCourseBgColor(courseItem) })
+
+      semesterCourseList.value = courseList
+    }
+
+    // current week course list
+    const weekCourseList = computed(() => semesterCourseList.value.filter(item => item.weeks.includes(currentWeekIndex.value + 1)))
+
+    // data for timetable action
+    const parsedCourseList = computed(() => {
+      // process course list
+      const parsedCourseList = Array.from({ length: 20 },
+        () => Array.from({ length: 7 },
+          () => Array.from({ length: 5 },
+            () => 0)))
+
+      for (const courseItem of semesterCourseList.value) {
+        const { start, duration, week, weeks } = courseItem
+        for (const w of weeks) {
+          const dayCourseList = parsedCourseList[w - 1][week - 1]
+          dayCourseList[Math.floor(start / 2)]++
+          // some courses may last more than 2 times
+          if (duration > 2)
+            dayCourseList[Math.floor(start / 2 + 1)]++
+        }
+      }
+      return parsedCourseList
+    })
+
+    // current week date list
+    const currentWeekDayArray = computed(() => {
       const weekIndex = currentWeekIndex.value
       const someDate = new Date(startDate.value)
       someDate.setDate(someDate.getDate() + weekIndex * 7)
@@ -66,11 +91,23 @@ export const useCourseStore = defineStore(
         dayArray.push(someDate.getDate())
       }
       return dayArray
+    })
+
+    /**
+     * list of course for a certain course item time
+     * @param courseItem the course item
+     */
+    function hasConflictCourse(courseItem: CourseModel): CourseModel[] {
+      if (conflictCourseMap.has(courseItem))
+        return conflictCourseMap.get(courseItem) || []
+      const { week, start } = courseItem
+      const mayConflictCourseList = weekCourseList.value.filter((item) => {
+        return item.weeks.includes(currentWeekIndex.value + 1) && item.week === week && item.start === start
+      })
+      conflictCourseMap.set(courseItem, mayConflictCourseList)
+      return conflictCourseMap.get(courseItem) || []
     }
 
-    const currentWeekDayArray = computed(() => getCurrentWeekDayArray())
-
-    // actions
     /**
      * set start date
      * @param someDate the start date of the semester
@@ -98,50 +135,43 @@ export const useCourseStore = defineStore(
 
     /**
      * get course item background color
-     * @param title course title
+     * @param courseItem course item
      * @returns course color
      */
-    function getCourseBgColor(title: string) {
-      if (!title)
-        return '#FFFFFF'
+    function getCourseBgColor(courseItem: CourseModel) {
+      const { title } = courseItem
       if (!colorMap.has(title)) {
         const colorArray = colorList[colorIndex.value]
-        let size = colorMap.size
-        size = size >= colorArray.length ? 0 : size
-        colorMap.set(title, colorArray[size])
+        colorMap.set(title, colorArray[colorMap.size % colorArray.length])
       }
       return colorMap.get(title)
     }
 
     /**
-     * set a course item to top when there has two course in the same time
+     * set a course to top when there have more than one course in the same time
      * @param courseItem course item
-     * @param courseItemIndex course item index in one day
      */
-    function setCourseItemTop(courseItem: CourseModel, courseItemIndex: number) {
-      if (!courseItemIndex)
-        return
-      const { start, week, weeks } = courseItem
-      for (let i = 0; i < weeks.length; i++) {
-        const dayDayCourse = semesterCourseList.value[weeks[i] - 1][week - 1][Math.floor(start / 2)]
-        if (dayDayCourse.length > 1) {
-          const temp = dayDayCourse[courseItemIndex]
-          dayDayCourse.splice(courseItemIndex, 1)
-          dayDayCourse.unshift(temp)
+    function setCourseItemTop(courseItem: CourseModel) {
+      const { title, week, start } = courseItem
+      for (let i = 0; i < semesterCourseList.value.length; i++) {
+        const item = semesterCourseList.value[i]
+        if (item.title === title && item.week === week && item.start === start) {
+          semesterCourseList.value.splice(i, 1)
+          semesterCourseList.value.unshift(courseItem)
         }
       }
     }
 
     /**
-     * delete a course item
+     * delete a course
      * @param courseItem course item
-     * @param courseItemIndex course item index in one day
      */
-    function deleteCourseItem(courseItem: CourseModel, courseItemIndex: number) {
-      const { start, week, weeks } = courseItem
-      for (let i = 0; i < weeks.length; i++) {
-        semesterCourseList.value[weeks[i] - 1][week - 1][Math.floor(start / 2)]
-          .splice(courseItemIndex, 1)
+    function deleteCourseItem(courseItem: CourseModel) {
+      const { title, week, start } = courseItem
+      for (let i = 0; i < semesterCourseList.value.length; i++) {
+        const item = semesterCourseList.value[i]
+        if (item.title === title && item.week === week && item.start === start)
+          semesterCourseList.value.splice(i, 1)
       }
     }
 
@@ -149,6 +179,9 @@ export const useCourseStore = defineStore(
       startDate,
       currentMonth,
       semesterCourseList,
+      setSemesterCourseList,
+      weekCourseList,
+      parsedCourseList,
       originalWeekIndex,
       originalWeeksWeekIndex,
       currentWeekIndex,
@@ -156,6 +189,7 @@ export const useCourseStore = defineStore(
       colorIndex,
       setStartDay,
       setCurrentWeekIndex,
+      hasConflictCourse,
       getCourseBgColor,
       setCourseItemTop,
       deleteCourseItem,
