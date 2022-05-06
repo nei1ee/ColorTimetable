@@ -97,14 +97,22 @@ export const useCourseStore = defineStore(
      * list of course for a certain course item time
      * @param courseItem the course item
      */
-    function hasConflictCourse(courseItem: CourseModel): CourseModel[] {
-      if (conflictCourseMap.has(courseItem))
-        return conflictCourseMap.get(courseItem) || []
+    function getConflictCourse(courseItem: CourseModel): CourseModel[] {
+      if (!courseItem)
+        return []
       const { week, start } = courseItem
-      const mayConflictCourseList = weekCourseList.value.filter((item) => {
+      return semesterCourseList.value.filter((item) => {
         return item.weeks.includes(currentWeekIndex.value + 1) && item.week === week && item.start === start
       })
-      conflictCourseMap.set(courseItem, mayConflictCourseList)
+    }
+
+    /**
+     * list of course for a certain course item time with map
+     * @param courseItem the course item
+     */
+    function hasConflictCourseMap(courseItem: CourseModel): CourseModel[] {
+      if (!conflictCourseMap.has(courseItem))
+        conflictCourseMap.set(courseItem, getConflictCourse(courseItem))
       return conflictCourseMap.get(courseItem) || []
     }
 
@@ -122,6 +130,7 @@ export const useCourseStore = defineStore(
     }
 
     function setCurrentWeekIndex(weekIndex: number) {
+      conflictCourseMap.clear()
       currentWeekIndex.value = weekIndex
       // change current month
       const someDate = new Date(startDate.value)
@@ -152,14 +161,8 @@ export const useCourseStore = defineStore(
      * @param courseItem course item
      */
     function setCourseItemTop(courseItem: CourseModel) {
-      const { title, week, start } = courseItem
-      for (let i = 0; i < semesterCourseList.value.length; i++) {
-        const item = semesterCourseList.value[i]
-        if (item.title === title && item.week === week && item.start === start) {
-          semesterCourseList.value.splice(i, 1)
-          semesterCourseList.value.unshift(courseItem)
-        }
-      }
+      deleteCourseItem(courseItem)
+      semesterCourseList.value.unshift(courseItem)
     }
 
     /**
@@ -167,6 +170,7 @@ export const useCourseStore = defineStore(
      * @param courseItem course item
      */
     function deleteCourseItem(courseItem: CourseModel) {
+      conflictCourseMap.clear()
       const { title, week, start } = courseItem
       for (let i = 0; i < semesterCourseList.value.length; i++) {
         const item = semesterCourseList.value[i]
@@ -189,7 +193,8 @@ export const useCourseStore = defineStore(
       colorIndex,
       setStartDay,
       setCurrentWeekIndex,
-      hasConflictCourse,
+      getConflictCourse,
+      hasConflictCourseMap,
       getCourseBgColor,
       setCourseItemTop,
       deleteCourseItem,

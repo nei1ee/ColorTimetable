@@ -28,15 +28,14 @@ courseStore.setStartDay(someDate)
 
 // handle course item click
 const showActionSheet = ref(false)
-const clickedCourseList = ref<CourseModel[]>()
-function handleShowActionSheet(courseList: CourseModel[]) {
+const clickedCourseItem = ref<CourseModel>()
+function handleShowActionSheet(courseItem: CourseModel) {
   showActionSheet.value = true
-  clickedCourseList.value = courseList
+  clickedCourseItem.value = courseItem
 }
 
 function handleCloseActionSheet() {
   showActionSheet.value = false
-  clickedCourseList.value = []
 }
 </script>
 
@@ -65,7 +64,7 @@ function handleCloseActionSheet() {
       <TimetableContent :show-course-action="showCourseAction" @course-item-click="handleShowActionSheet" />
       <!-- course card -->
       <CourseActionSheet
-        :show-action-sheet="showActionSheet" :course-list="clickedCourseList"
+        :show-action-sheet="showActionSheet" :course-item="clickedCourseItem"
         @cancel="handleCloseActionSheet"
       />
     </div>

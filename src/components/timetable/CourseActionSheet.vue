@@ -2,16 +2,18 @@
 import type { CourseModel } from '@/store/modules/course'
 import { useCourseStore, weekTitle } from '@/store/modules/course'
 
-withDefaults(
-  defineProps<{ showActionSheet: boolean; courseList: CourseModel[] }>(), {
+const props = withDefaults(
+  defineProps<{ showActionSheet: boolean; courseItem: CourseModel }>(), {
     showActionSheet: false,
-    courseList: () => [],
+    courseItem: undefined,
   },
 )
 
 const emit = defineEmits(['cancel'])
 
 const courseStore = useCourseStore()
+
+const courseList = computed(() => courseStore.getConflictCourse(props.courseItem))
 
 function navigateToDetail(courseItem: CourseModel) {
   uni.navigateTo({
@@ -28,7 +30,7 @@ function closeActionSheet() {
   <div @touchmove.stop.prevent>
     <div
       class="bg-white w-full min-h-10 transition-all ease-in-out z-100 duration-300 fixed dark:bg-#121212"
-      :class="showActionSheet && courseList?.length ? 'bottom-0' : '-bottom-full'" @click.stop
+      :class="showActionSheet && courseList?.length ? 'bottom-0' : '-bottom-full'"
     >
       <div class="flex flex-col py-6 gap-6">
         <div v-if="courseList?.length" class="font-medium text-xl px-4">
@@ -47,10 +49,7 @@ function closeActionSheet() {
               <div class="font-medium text-lg">
                 {{ courseItem.title }}
               </div>
-              <div
-                class="text-xl top-0 right-4 bottom-0 absolute" :class="index ? 'i-carbon-up-to-top' : ''"
-                @click="courseStore.setCourseItemTop(courseItem)"
-              />
+              <div class="text-xl top-0 right-4 bottom-0 z-20 absolute" :class="index ? 'i-carbon-up-to-top' : ''" @click="courseStore.setCourseItemTop(courseItem)" />
             </div>
             <div class="flex gap-1 justify-start items-center">
               <div class="i-mdi-navigation-variant" />
