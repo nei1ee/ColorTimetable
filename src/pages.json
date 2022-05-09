@@ -3,14 +3,21 @@
     "backgroundColor": "@navBgColor",
     "navigationBarBackgroundColor": "#F8F8F8",
     "navigationBarTextStyle": "@navTxtStyle",
-    "navigationBarTitleText": "uni-app",
-    "navigationStyle": "custom"
+    "navigationBarTitleText": "ColorTimetable"
   },
   "pages": [
     {
       "path": "pages/index/index",
       "style": {
-        "navigationBarTitleText": "uni-app"
+        "navigationBarTitleText": "ColorTimetable",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/index/detail",
+      "style": {
+        "navigationBarTitleText": "课程详情",
+        "navigationStyle": "custom"
       }
     }
   ]

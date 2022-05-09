@@ -25,7 +25,6 @@
 
 - 🦾 TypeScript 的类型检查
 
-<br>
 
 ## 预配置
 
@@ -77,21 +76,28 @@ pnpm run build:mp-weixin
 ```
 
 
-
 ## Change Log
 
+### Version 2.1.0
+#### Features
+* Add a page to add and edit course
+
+#### Changed
+* **Change course data structure**
+* Change the course card display method
+
+<br>
+
 ### Version 2.0.0
+#### Features
+* Update from Vue2 to Vue3
+* Dark theme
 
-1. F Upgrade Vue3
-
-2. F Dark theme
 
 ### Version 1.x
 
 [ColorTimetable Vue2](https://github.com/zguolee/ColorTimetable/tree/vue2)
 
-
-<br>
 
 ## License
 

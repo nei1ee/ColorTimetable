@@ -37,7 +37,7 @@ function getCoursePosition(item: CourseModel) {
       <TimetableAction :show-course-action="showCourseAction" />
       <TimetableHeader />
     </div>
-    <div class="min-h-max pb-safe grid grid-flow-col p-1 z-20 gap-1 grid-rows-10 grid-cols-[0.7fr_repeat(7,1fr)]">
+    <div class="bg-white min-h-max pb-safe grid grid-flow-col p-1 z-20 gap-1 grid-rows-10 grid-cols-[0.7fr_repeat(7,1fr)] dark:bg-#121212">
       <template v-for="(courseTime, courseIndex) in courseTimeList" :key="courseIndex">
         <div class="flex flex-col text-sm min-h-18 justify-evenly items-center">
           <div class="font-medium">
@@ -55,7 +55,7 @@ function getCoursePosition(item: CourseModel) {
           @click="emit('courseItemClick', courseItem)"
         >
           <div class="flex flex-col h-full text-white text-xs w-full justify-around items-center">
-            <div class="font-medium">
+            <div class="font-medium break-all">
               {{ hasConflictCourseMap(courseItem)[0].title }}
             </div>
             <div class="break-all">

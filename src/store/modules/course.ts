@@ -4,14 +4,12 @@ import { store } from '@/store'
 export interface CourseModel {
   title: string
   location: string
-  time: string
   start: number
   duration: number
   // [1-7]
   week: number
   // [[1-20]]
   weeks: number[]
-  top: boolean
   bgColor?: string
 }
 
@@ -179,6 +177,19 @@ export const useCourseStore = defineStore(
       }
     }
 
+    /**
+     * delete a course by title
+     * @param courseTitle course title
+     */
+    function deleteCourseItemByTitle(courseTitle: string) {
+      conflictCourseMap.clear()
+      for (let i = 0; i < semesterCourseList.value.length; i++) {
+        const item = semesterCourseList.value[i]
+        if (item.title === courseTitle)
+          semesterCourseList.value.splice(i, 1)
+      }
+    }
+
     return {
       startDate,
       currentMonth,
@@ -198,6 +209,7 @@ export const useCourseStore = defineStore(
       getCourseBgColor,
       setCourseItemTop,
       deleteCourseItem,
+      deleteCourseItemByTitle,
     }
   },
 )

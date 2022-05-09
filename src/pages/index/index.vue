@@ -9,7 +9,6 @@ const appStore = useAppStore()
 const courseStore = useCourseStore()
 
 const showCourseAction = ref(false)
-const showDrawerAction = ref(false)
 
 // mock api
 uni.request({
@@ -26,6 +25,12 @@ const someDate = new Date()
 someDate.setDate(someDate.getDate() - 8 * 7 + (someDate.getDay() + 1) % 7)
 courseStore.setStartDay(someDate)
 
+function handleCreateCourse() {
+  uni.navigateTo({
+    url: '/pages/index/detail',
+  })
+}
+
 // handle course item click
 const showActionSheet = ref(false)
 const clickedCourseItem = ref<CourseModel>()
@@ -41,13 +46,14 @@ function handleCloseActionSheet() {
 
 <template>
   <div class="font-mono text-gray-500" :class="appStore.darkMode ? 'dark' : ''">
-    <div class="dark:(bg-#121212 !text-gray-200) ">
+    <div class="bg-gray-100 dark:(bg-#121212 !text-gray-200) ">
       <!-- custom bar -->
       <div class="bg-white top-0 sticky dark:bg-#121212">
         <div
           class="text-center px-6 relative"
           :style="{ 'margin-top': `${appStore.statusBarHeight}px`, 'height': `${appStore.customBarHeight - appStore.statusBarHeight}px` }"
         >
+          <div class="h-full text-xl left-4 i-carbon-add absolute" @click="handleCreateCourse" />
           <div
             class="flex h-full mx-auto w-20 justify-center items-center inline-block"
             @click="showCourseAction = !showCourseAction"

@@ -1,6 +1,6 @@
 {
   "name": "color-timetable",
-  "version": "0.0.0",
+  "version": "2.1.0",
   "scripts": {
     "dev:custom": "uni -p",
     "dev:h5": "uni",
@@ -14,11 +14,12 @@
     "build:mp-weixin": "uni build -p mp-weixin"
   },
   "dependencies": {
-    "@dcloudio/uni-app": "3.0.0-alpha-3000020210521001",
+    "@dcloudio/uni-app": "^3.0.0-alpha-3031120220216001",
     "@dcloudio/uni-components": "^3.0.0-alpha-3040520220408002",
     "@dcloudio/uni-h5": "^3.0.0-alpha-3040520220408002",
     "@dcloudio/uni-mp-qq": "^3.0.0-alpha-3040520220408002",
     "@dcloudio/uni-mp-weixin": "^3.0.0-alpha-3040520220408002",
+    "lodash-es": "^4.17.21",
     "pinia": "^2.0.13",
     "vue": "^3.2.33",
     "vue-demi": "^0.12.5"
@@ -29,6 +30,7 @@
     "@dcloudio/vite-plugin-uni": "^3.0.0-alpha-3040520220408002",
     "@iconify-json/carbon": "^1.1.4",
     "@iconify-json/mdi": "^1.1.10",
+    "@types/lodash-es": "^4.17.6",
     "@types/node": "^17.0.31",
     "eslint": "^8.14.0",
     "typescript": "^4.6.4",

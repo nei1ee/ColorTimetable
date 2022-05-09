@@ -16,8 +16,9 @@ const courseStore = useCourseStore()
 const courseList = computed(() => courseStore.getConflictCourse(props.courseItem))
 
 function navigateToDetail(courseItem: CourseModel) {
+  closeActionSheet()
   uni.navigateTo({
-    url: `/pages/index/detail?course=${encodeURIComponent(JSON.stringify(courseItem))}`,
+    url: `/pages/index/detail?course=${courseItem.title}`,
   })
 }
 
@@ -27,7 +28,7 @@ function closeActionSheet() {
 </script>
 
 <template>
-  <div @touchmove.stop.prevent>
+  <div @touchmove.prevent>
     <div
       class="bg-white w-full min-h-10 transition-all ease-in-out z-100 duration-300 fixed dark:bg-#121212"
       :class="showActionSheet && courseList?.length ? 'bottom-0' : '-bottom-full'"
@@ -39,8 +40,10 @@ function closeActionSheet() {
           }}
         </div>
         <template v-for="(courseItem, index) of courseList" :key="index">
-          <div class="flex flex-col px-4 gap-2">
-            <!-- @click="navigateToDetail(courseItem)" -->
+          <div
+            class="flex flex-col px-4 gap-2"
+            @click="navigateToDetail(courseItem)"
+          >
             <div class="flex mb-1 w-full gap-2 justify-start items-center relative">
               <div
                 class="rounded-full h-5 transition-background-color w-1 duration-300 inline-block"
@@ -49,7 +52,7 @@ function closeActionSheet() {
               <div class="font-medium text-lg">
                 {{ courseItem.title }}
               </div>
-              <div class="text-xl top-0 right-4 bottom-0 z-20 absolute" :class="index ? 'i-carbon-up-to-top' : ''" @click="courseStore.setCourseItemTop(courseItem)" />
+              <div class="text-xl top-0 right-4 bottom-0 z-20 absolute" :class="index ? 'i-carbon-up-to-top' : ''" @click.stop="courseStore.setCourseItemTop(courseItem)" />
             </div>
             <div class="flex gap-1 justify-start items-center">
               <div class="i-mdi-navigation-variant" />
@@ -57,16 +60,8 @@ function closeActionSheet() {
             </div>
             <div class="flex gap-1 justify-start items-center">
               <div class="i-mdi-clock" />
-              {{ courseItem.time }}
+              {{ `星期${weekTitle[courseItem.week - 1]} 第${courseItem.start}-${courseItem.start + courseItem.duration - 1}节` }}
             </div>
-            <!-- <div class="flex justify-around items-center">
-              <div
-                :class="index ? 'i-carbon-up-to-top' : 'i-carbon-error'"
-                @click="courseStore.setCourseItemTop(courseItem, index)"
-              />
-              <div class="i-carbon-edit" />
-              <div class="i-carbon-delete" @click="handleDeleteCourseItem(courseItem, index)" />
-            </div> -->
           </div>
         </template>
       </div>
