@@ -26,7 +26,7 @@ const isUpdate = ref(false)
 onLoad((option: any) => {
   isUpdate.value = !!option?.course
   if (isUpdate.value) {
-    const courseListTemp = courseStore.semesterCourseList.filter(item => item.title === option?.course)
+    const courseListTemp = courseStore.courseList.filter(item => item.title === option?.course)
     for (const courseItem of courseListTemp)
       courseList.value.push(cloneDeep(courseItem))
     originalCourseTitle.value = option?.course
@@ -63,7 +63,7 @@ function handleSaveCourse() {
   if (isUpdate.value)
     courseStore.deleteCourseItemByTitle(originalCourseTitle.value)
 
-  courseStore.setSemesterCourseList(courseStore.semesterCourseList.concat(courseList.value))
+  courseStore.setCourseList(courseStore.courseList.concat(courseList.value))
   uni.showModal({
     title: '提示',
     content: '保存成功',
@@ -81,6 +81,10 @@ function handleShowWeekActionSheet(clickIndex: number) {
   clickedWeeks.value = courseList.value[clickIndex].weeks
 }
 
+/**
+ * transform weeks to string eg: [1, 2, 3, 5, 6, 8] to '1-3,5-6,8'
+ * @param weeks week list
+ */
 function transformArray2String(weeks: number[]): string {
   let weeksString = ''
   for (let i = 0; i < weeks.length; i++) {

@@ -5,9 +5,9 @@ const courseStore = useCourseStore()
 
 const {
   currentMonth,
-  originalWeeksWeekIndex,
   originalWeekIndex,
   currentWeekIndex,
+  originalWeekWeekIndex,
   currentWeekDayArray,
 } = toRefs(courseStore)
 </script>
@@ -20,7 +20,7 @@ const {
     <div
       v-for="(item, index) in currentWeekDayArray" :key="index"
       class="border-y-transparent border-x-none flex flex-col border-t-4 border-b-4 text-xs transition duration-300 justify-evenly items-center"
-      :class="originalWeekIndex === currentWeekIndex && originalWeeksWeekIndex === index ? 'bg-light-blue-200 !border-b-light-blue-500 dark:bg-opacity-50' : ''"
+      :class="originalWeekIndex === currentWeekIndex && originalWeekWeekIndex === index ? 'bg-light-blue-200 !border-b-light-blue-500 dark:bg-opacity-50' : ''"
     >
       <p class="font-medium">
         {{ weekTitle[index] }}

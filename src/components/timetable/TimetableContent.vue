@@ -16,7 +16,7 @@ const emit = defineEmits(['courseItemClick'])
 const appStore = useAppStore()
 const courseStore = useCourseStore()
 
-const { hasConflictCourseMap } = courseStore
+const { hasConflictCourseByMap } = courseStore
 
 /**
  * get course position
@@ -51,18 +51,18 @@ function getCoursePosition(item: CourseModel) {
       <template v-for="(courseItem, courseIndex) of courseStore.weekCourseList" :key="courseIndex">
         <div
           class="border-white rounded-lg border-2 border-opacity-50 text-center p-1 col-span-1 relative box-content"
-          :style="[getCoursePosition(courseItem), `background-color: ${hasConflictCourseMap(courseItem)[0].bgColor}`]"
+          :style="[getCoursePosition(courseItem), `background-color: ${hasConflictCourseByMap(courseItem)[0].bgColor}`]"
           @click="emit('courseItemClick', courseItem)"
         >
           <div class="flex flex-col h-full text-white text-xs w-full justify-around items-center">
             <div class="font-medium break-all">
-              {{ hasConflictCourseMap(courseItem)[0].title }}
+              {{ hasConflictCourseByMap(courseItem)[0].title }}
             </div>
             <div class="break-all">
               <div class="text-8px i-carbon-location-current" />
-              {{ hasConflictCourseMap(courseItem)[0].location }}
+              {{ hasConflictCourseByMap(courseItem)[0].location }}
             </div>
-            <div v-if="hasConflictCourseMap(courseItem).length > 1" class="bg-white rounded h-1.5 top-1 right-1 w-1.5 absolute" />
+            <div v-if="hasConflictCourseByMap(courseItem).length > 1" class="bg-white rounded h-1.5 top-1 right-1 w-1.5 absolute" />
           </div>
         </div>
       </template>

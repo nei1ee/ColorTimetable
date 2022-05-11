@@ -25,7 +25,7 @@ export const courseTimeList = [
 
 const colorMap = new Map<string, string>()
 
-export const colorList = [
+export const colorArrayList = [
   ['#FFDC72', '#CE7CF4', '#FF7171', '#66CC99', '#FF9966', '#66CCCC', '#6699CC', '#99CC99', '#669966', '#66CCFF', '#99CC66', '#FF9999', '#81CC74'],
   ['#99CCFF', '#FFCC99', '#CCCCFF', '#99CCCC', '#A1D699', '#7397db', '#ff9983', '#87D7EB', '#99CC99'],
 ]
@@ -36,35 +36,39 @@ export const useCourseStore = defineStore(
   'course',
   () => {
     const startDate = ref<Date | string>(new Date())
-    const semesterCourseList = ref<CourseModel[]>([])
+    const weekNum = ref<number>(20)
+    const courseList = ref<CourseModel[]>([])
     const currentMonth = ref<number>(0)
     const originalWeekIndex = ref<number>(0)
     const currentWeekIndex = ref<number>(0)
-    const colorIndex = ref<number>(0)
+    const originalWeekWeekIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1
+    const colorArrayIndex = ref<number>(0)
 
-    const originalWeeksWeekIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1
-
-    function setSemesterCourseList(courseList: CourseModel[]) {
-      colorMap.clear()
+    /**
+     * init course list
+     * @param newCourseList new course list
+     */
+    function setCourseList(newCourseList: CourseModel[]) {
       conflictCourseMap.clear()
-      for (const courseItem of courseList)
-        Object.assign(courseItem, { bgColor: getCourseBgColor(courseItem) })
-
-      semesterCourseList.value = courseList
+      courseList.value = newCourseList
+      resetCourseBgColor()
     }
 
     // current week course list
-    const weekCourseList = computed(() => semesterCourseList.value.filter(item => item.weeks.includes(currentWeekIndex.value + 1)))
+    const weekCourseList = computed(
+      () => courseList.value.filter(item => item.weeks.includes(currentWeekIndex.value + 1)),
+    )
 
-    // data for timetable action
+    // data for course action
     const parsedCourseList = computed(() => {
-      // process course list
-      const parsedCourseList = Array.from({ length: 20 },
+      // init a course array
+      const parsedCourseList = Array.from({ length: weekNum.value },
         () => Array.from({ length: 7 },
           () => Array.from({ length: 5 },
             () => 0)))
 
-      for (const courseItem of semesterCourseList.value) {
+      // process course list
+      for (const courseItem of courseList.value) {
         const { start, duration, week, weeks } = courseItem
         for (const w of weeks) {
           const dayCourseList = parsedCourseList[w - 1][week - 1]
@@ -99,7 +103,7 @@ export const useCourseStore = defineStore(
       if (!courseItem)
         return []
       const { week, start } = courseItem
-      return semesterCourseList.value.filter((item) => {
+      return courseList.value.filter((item) => {
         return item.weeks.includes(currentWeekIndex.value + 1) && item.week === week && item.start === start
       })
     }
@@ -108,7 +112,7 @@ export const useCourseStore = defineStore(
      * list of course for a certain course item time with map
      * @param courseItem the course item
      */
-    function hasConflictCourseMap(courseItem: CourseModel): CourseModel[] {
+    function hasConflictCourseByMap(courseItem: CourseModel): CourseModel[] {
       if (!conflictCourseMap.has(courseItem))
         conflictCourseMap.set(courseItem, getConflictCourse(courseItem))
       return conflictCourseMap.get(courseItem) || []
@@ -127,6 +131,10 @@ export const useCourseStore = defineStore(
       setCurrentWeekIndex(originalWeekIndex.value)
     }
 
+    /**
+     * change current week index
+     * @param weekIndex the new week index
+     */
     function setCurrentWeekIndex(weekIndex: number) {
       conflictCourseMap.clear()
       currentWeekIndex.value = weekIndex
@@ -136,23 +144,33 @@ export const useCourseStore = defineStore(
       currentMonth.value = someDate.getMonth() + 1
     }
 
-    watch(() => colorIndex.value, () => {
+    /**
+     * reset course bg color
+     */
+    function resetCourseBgColor() {
       colorMap.clear()
-    })
+      courseList.value.map(courseItem =>
+        Object.assign(courseItem, { bgColor: getCourseBgColor(courseItem) }),
+      )
+    }
 
     /**
      * get course item background color
      * @param courseItem course item
      * @returns course color
      */
-    function getCourseBgColor(courseItem: CourseModel) {
+    function getCourseBgColor(courseItem: CourseModel): string {
+      const colorArray = colorArrayList[colorArrayIndex.value]
       const { title } = courseItem
-      if (!colorMap.has(title)) {
-        const colorArray = colorList[colorIndex.value]
+      if (!colorMap.has(title))
         colorMap.set(title, colorArray[colorMap.size % colorArray.length])
-      }
-      return colorMap.get(title)
+      return colorMap.get(title) || '#FFFFFF'
     }
+
+    watch(
+      () => colorArrayIndex.value,
+      () => resetCourseBgColor(),
+    )
 
     /**
      * set a course to top when there have more than one course in the same time
@@ -160,7 +178,7 @@ export const useCourseStore = defineStore(
      */
     function setCourseItemTop(courseItem: CourseModel) {
       deleteCourseItem(courseItem)
-      semesterCourseList.value.unshift(courseItem)
+      courseList.value.unshift(courseItem)
     }
 
     /**
@@ -170,10 +188,10 @@ export const useCourseStore = defineStore(
     function deleteCourseItem(courseItem: CourseModel) {
       conflictCourseMap.clear()
       const { title, week, start } = courseItem
-      for (let i = 0; i < semesterCourseList.value.length; i++) {
-        const item = semesterCourseList.value[i]
+      for (let i = 0; i < courseList.value.length; i++) {
+        const item = courseList.value[i]
         if (item.title === title && item.week === week && item.start === start)
-          semesterCourseList.value.splice(i, 1)
+          courseList.value.splice(i, 1)
       }
     }
 
@@ -183,30 +201,29 @@ export const useCourseStore = defineStore(
      */
     function deleteCourseItemByTitle(courseTitle: string) {
       conflictCourseMap.clear()
-      for (let i = 0; i < semesterCourseList.value.length; i++) {
-        const item = semesterCourseList.value[i]
+      for (let i = 0; i < courseList.value.length; i++) {
+        const item = courseList.value[i]
         if (item.title === courseTitle)
-          semesterCourseList.value.splice(i, 1)
+          courseList.value.splice(i, 1)
       }
     }
 
     return {
       startDate,
       currentMonth,
-      semesterCourseList,
-      setSemesterCourseList,
+      courseList,
+      setCourseList,
       weekCourseList,
       parsedCourseList,
       originalWeekIndex,
-      originalWeeksWeekIndex,
       currentWeekIndex,
+      originalWeekWeekIndex,
       currentWeekDayArray,
-      colorIndex,
+      colorArrayIndex,
       setStartDay,
       setCurrentWeekIndex,
       getConflictCourse,
-      hasConflictCourseMap,
-      getCourseBgColor,
+      hasConflictCourseByMap,
       setCourseItemTop,
       deleteCourseItem,
       deleteCourseItemByTitle,

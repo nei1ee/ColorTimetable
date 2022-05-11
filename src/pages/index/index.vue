@@ -15,7 +15,7 @@ uni.request({
   url: 'https://www.fastmock.site/mock/7074538d5f28bc8bcab58385107d778f/api/course',
   success: (res: any) => {
     // set semester course data
-    courseStore.setSemesterCourseList(res.data.data as CourseModel[])
+    courseStore.setCourseList(res.data.data as CourseModel[])
   },
 })
 
