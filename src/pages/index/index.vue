@@ -51,7 +51,7 @@ function handleCloseActionSheet() {
       <div class="bg-white top-0 sticky dark:bg-#121212">
         <div
           class="text-center px-6 relative"
-          :style="{ 'margin-top': `${appStore.statusBarHeight}px`, 'height': `${appStore.customBarHeight - appStore.statusBarHeight}px` }"
+          :style="{ 'padding-top': `${appStore.statusBarHeight}px`, 'height': `${appStore.customBarHeight - appStore.statusBarHeight}px` }"
         >
           <div class="h-full text-xl left-4 i-carbon-add absolute" @click="handleCreateCourse" />
           <div
