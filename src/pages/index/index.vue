@@ -48,21 +48,25 @@ function handleCloseActionSheet() {
   <div class="font-mono text-gray-500" :class="appStore.darkMode ? 'dark' : ''">
     <div class="bg-gray-100 dark:(bg-#121212 !text-gray-200) ">
       <!-- custom bar -->
-      <div class="bg-white top-0 sticky dark:bg-#121212">
+      <div
+        class="bg-white w-full top-0 z-100 fixed dark:bg-#121212"
+        :style="{ height: `${appStore.customBarHeight}px` }"
+      >
         <div
-          class="text-center px-6 relative"
           :style="{ 'padding-top': `${appStore.statusBarHeight}px`, 'height': `${appStore.customBarHeight - appStore.statusBarHeight}px` }"
         >
-          <div class="h-full text-xl left-4 i-carbon-add absolute" @click="handleCreateCourse" />
-          <div
-            class="flex h-full mx-auto w-20 justify-center items-center inline-block"
-            @click="showCourseAction = !showCourseAction"
-          >
-            {{ `第${courseStore.currentWeekIndex + 1}周` }}
+          <div class="h-full text-center px-6 relative">
+            <div class="h-full text-xl left-4 i-carbon-add absolute" @click="handleCreateCourse" />
             <div
-              class="transition-transform duration-300 i-carbon-chevron-up"
-              :class="showCourseAction ? 'rotate-180' : 'rotate-0'"
-            />
+              class="flex h-full mx-auto w-20 justify-center items-center inline-block"
+              @click="showCourseAction = !showCourseAction"
+            >
+              {{ `第${courseStore.currentWeekIndex + 1}周` }}
+              <div
+                class="transition-transform duration-300 i-carbon-chevron-up"
+                :class="showCourseAction ? 'rotate-180' : 'rotate-0'"
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -32,12 +32,21 @@ function getCoursePosition(item: CourseModel) {
 </script>
 
 <template>
-  <div class="overflow-y-scroll relative dark:bg-#121212" :style="{ height: `calc(100vh - ${appStore.customBarHeight}px)` }">
-    <div class="bg-white top-0 z-10 sticky dark:bg-#121212">
+  <div
+    class="overflow-y-scroll relative dark:bg-#121212"
+    :style="{ 'height': `calc(100vh - ${appStore.customBarHeight}px)`, 'padding-top': `${appStore.customBarHeight}px` }"
+  >
+    <div
+      class="bg-white w-full top-0 z-10 fixed dark:bg-#121212"
+      :style="{ 'padding-top': `${appStore.customBarHeight}px` }"
+    >
       <TimetableAction :show-course-action="showCourseAction" />
       <TimetableHeader />
     </div>
-    <div class="bg-white min-h-max pb-safe grid grid-flow-col p-1 z-20 gap-1 grid-rows-10 grid-cols-[0.7fr_repeat(7,1fr)] dark:bg-#121212">
+    <div
+      class="bg-white min-h-max pb-safe grid grid-flow-col p-1 transition-all z-20 gap-1 grid-rows-10 grid-cols-[0.7fr_repeat(7,1fr)] duration-300 dark:bg-#121212"
+      :class="showCourseAction ? 'pt-30' : 'pt-10'"
+    >
       <template v-for="(courseTime, courseIndex) in courseTimeList" :key="courseIndex">
         <div class="flex flex-col text-sm min-h-18 justify-evenly items-center">
           <div class="font-medium">
@@ -62,7 +71,10 @@ function getCoursePosition(item: CourseModel) {
               <div class="text-8px i-carbon-location-current" />
               {{ hasConflictCourseByMap(courseItem)[0].location }}
             </div>
-            <div v-if="hasConflictCourseByMap(courseItem).length > 1" class="bg-white rounded h-1.5 top-1 right-1 w-1.5 absolute" />
+            <div
+              v-if="hasConflictCourseByMap(courseItem).length > 1"
+              class="bg-white rounded h-1.5 top-1 right-1 w-1.5 absolute"
+            />
           </div>
         </div>
       </template>
