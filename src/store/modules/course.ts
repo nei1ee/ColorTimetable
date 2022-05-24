@@ -56,7 +56,7 @@ export const useCourseStore = defineStore(
 
     // current week course list
     const weekCourseList = computed(
-      () => courseList.value.filter(item => item.weeks.includes(currentWeekIndex.value + 1)),
+      () => courseList.value && courseList.value.filter(item => item.weeks.includes(currentWeekIndex.value + 1)),
     )
 
     // data for course action
@@ -67,15 +67,17 @@ export const useCourseStore = defineStore(
           () => Array.from({ length: 5 },
             () => 0)))
 
-      // process course list
-      for (const courseItem of courseList.value) {
-        const { start, duration, week, weeks } = courseItem
-        for (const w of weeks) {
-          const dayCourseList = parsedCourseList[w - 1][week - 1]
-          dayCourseList[Math.floor(start / 2)]++
-          // some courses may last more than 2 times
-          if (duration > 2)
-            dayCourseList[Math.floor(start / 2 + 1)]++
+      if (courseList.value) {
+        // process course list
+        for (const courseItem of courseList.value) {
+          const { start, duration, week, weeks } = courseItem
+          for (const w of weeks) {
+            const dayCourseList = parsedCourseList[w - 1][week - 1]
+            dayCourseList[Math.floor(start / 2)]++
+            // some courses may last more than 2 times
+            if (duration > 2)
+              dayCourseList[Math.floor(start / 2 + 1)]++
+          }
         }
       }
       return parsedCourseList
@@ -149,9 +151,11 @@ export const useCourseStore = defineStore(
      */
     function resetCourseBgColor() {
       colorMap.clear()
-      courseList.value.map(courseItem =>
-        Object.assign(courseItem, { bgColor: getCourseBgColor(courseItem) }),
-      )
+      if (courseList.value) {
+        courseList.value.map(courseItem =>
+          Object.assign(courseItem, { bgColor: getCourseBgColor(courseItem) }),
+        )
+      }
     }
 
     /**
