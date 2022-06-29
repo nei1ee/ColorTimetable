@@ -1,7 +1,5 @@
-import type { PreflightContext } from 'unocss'
 import {
   defineConfig,
-  entriesToCss,
   presetIcons,
   presetUno,
   presetWebFonts,
@@ -11,20 +9,14 @@ import {
 import { unocssToUniProcess } from 'vite-plugin-unocss-to-uni'
 
 export default defineConfig({
-  shortcuts: [],
+  shortcuts: {
+    'border-base': 'border-gray-200 dark:border-dark-200',
+    'bg-base': 'bg-white dark:bg-dark-100',
+    'color-base': 'text-gray-900 dark:text-gray-300',
+    'color-fade': 'text-gray-900:50 dark:text-gray-300:50',
+  },
   presets: [
-    {
-      ...presetUno(),
-      preflights: [
-        {
-          layer: 'preflights',
-          getCSS(ctx: PreflightContext<any>) {
-            if (ctx.theme.preflightBase)
-              return `page{${entriesToCss(Object.entries(ctx.theme.preflightBase))}}`
-          },
-        },
-      ],
-    },
+    presetUno(),
     presetIcons({
       scale: 1.2,
       warn: true,

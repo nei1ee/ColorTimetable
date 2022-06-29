@@ -57,6 +57,13 @@ function handleAddNewTime() {
 }
 
 function handleSaveCourse() {
+  if (!courseTitle.value) {
+    uni.showToast({
+      title: '请输入课程名称',
+      icon: 'none',
+    })
+    return
+  }
   for (const courseItem of courseList.value)
     Object.assign(courseItem, { title: courseTitle.value })
 
