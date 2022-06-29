@@ -1,5 +1,7 @@
+import type { PreflightContext } from 'unocss'
 import {
   defineConfig,
+  entriesToCss,
   presetIcons,
   presetUno,
   presetWebFonts,
@@ -16,7 +18,18 @@ export default defineConfig({
     'color-fade': 'text-gray-900:50 dark:text-gray-300:50',
   },
   presets: [
-    presetUno(),
+    {
+      ...presetUno(),
+      preflights: [
+        {
+          layer: 'preflights',
+          getCSS(ctx: PreflightContext<any>) {
+            if (ctx.theme.preflightBase)
+              return `page{${entriesToCss(Object.entries(ctx.theme.preflightBase))}}`
+          },
+        },
+      ],
+    },
     presetIcons({
       scale: 1.2,
       warn: true,
