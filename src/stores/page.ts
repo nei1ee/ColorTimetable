@@ -20,13 +20,13 @@ export const usePageStore = defineStore(
     const setPageConfig = (config: PageConfig) => {
       const {
         showNavBar: _showNavBar = true, showBackAction: _showBackAction = false,
-        showCustomAction: _showCustomAction = false, pageTitle: _pageTitle = false,
+        showCustomAction: _showCustomAction = false, pageTitle: _pageTitle = '',
       } = config
 
-      _showNavBar && (showNavBar.value = _showNavBar)
-      _showBackAction && (showBackAction.value = _showBackAction)
-      _showCustomAction && (showCustomAction.value = _showCustomAction)
-      !!_pageTitle && (pageTitle.value = _pageTitle)
+      showNavBar.value = _showNavBar
+      showBackAction.value = _showBackAction
+      showCustomAction.value = _showCustomAction
+      pageTitle.value = _pageTitle
     }
 
     const showNotify = (options: UNotifyOptions) => notifyRef.value!.handleShowNotify(options)

@@ -11,6 +11,13 @@
   },
   "pages": [
     { "path": "pages/splash/splash" },
-    { "path": "pages/index/index" }
-  ]
+    { "path": "pages/index/index" },
+    { "path": "pages/detail/detail" }
+  ],
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^U(.*)": "~/components/timetable/U$1.vue"
+    }
+  }
 }

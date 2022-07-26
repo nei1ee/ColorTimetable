@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useCourseStore } from '@/store/modules/course'
-
 const props = defineProps<{ showCourseAction: boolean }>()
 
 const courseStore = useCourseStore()

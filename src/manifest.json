@@ -8,7 +8,11 @@
   "mp-weixin": {
     "appid": "wx75a923653afa4a7a",
     "setting": {
-      "urlCheck": false
+      "urlCheck": false,
+      "es6": true,
+      "minified": true,
+      "uglifyFileName": false,
+      "minifyWXML": true
     },
     "usingComponents": true,
     "darkmode": true

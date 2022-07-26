@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { CourseModel } from '@/store/modules/course'
-import { useCourseStore, weekTitle } from '@/store/modules/course'
+import type { CourseModel } from '~/stores/course'
+import { weekTitle } from '~/stores/course'
 
 const props = withDefaults(
   defineProps<{ showActionSheet: boolean; courseItem: CourseModel }>(), {
@@ -18,7 +18,7 @@ const courseList = computed(() => courseStore.getConflictCourse(props.courseItem
 function navigateToDetail(courseItem: CourseModel) {
   closeActionSheet()
   uni.navigateTo({
-    url: `/pages/index/detail?course=${courseItem.title}`,
+    url: `/pages/detail/detail?course=${courseItem.title}`,
   })
 }
 
@@ -55,11 +55,11 @@ function closeActionSheet() {
               <div class="text-xl top-0 right-4 bottom-0 z-20 absolute" :class="index ? 'i-carbon-up-to-top' : ''" @click.stop="courseStore.setCourseItemTop(courseItem)" />
             </div>
             <div class="flex gap-1 justify-start items-center">
-              <div class="i-mdi-navigation-variant" />
+              <div class="i-carbon-location" />
               {{ courseItem.location }}
             </div>
             <div class="flex gap-1 justify-start items-center">
-              <div class="i-mdi-clock" />
+              <div class="i-carbon-alarm" />
               {{ `星期${weekTitle[courseItem.week - 1]} 第${courseItem.start}-${courseItem.start + courseItem.duration - 1}节` }}
             </div>
           </div>

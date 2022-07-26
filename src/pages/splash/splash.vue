@@ -1,14 +1,12 @@
 <script setup lang="ts">
-const pageStore = usePageStore()
+const { setPageConfig } = usePageStore()
 
 onShow(() => {
-  pageStore.setPageConfig({
-    showNavBar: false,
-  })
+  setPageConfig({ showNavBar: false })
 })
 
 setTimeout(() => {
-  uni.navigateTo({
+  uni.redirectTo({
     url: '/pages/index/index',
   })
 }, 500)

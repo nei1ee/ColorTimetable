@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import TimetableAction from './TimetableAction.vue'
-import TimetableHeader from './TimetableHeader.vue'
-import type { CourseModel } from '@/store/modules/course'
-import { useAppStore } from '@/store/modules/app'
-import { courseTimeList, useCourseStore } from '@/store/modules/course'
+import type { CourseModel } from '~/stores/course'
+import { courseTimeList } from '~/stores/course'
 
 withDefaults(
   defineProps<{ showCourseAction: boolean }>(), {
@@ -13,7 +10,7 @@ withDefaults(
 
 const emit = defineEmits(['courseItemClick'])
 
-const appStore = useAppStore()
+const { customBarHeight } = useAppStore()
 const courseStore = useCourseStore()
 
 const { hasConflictCourseByMap } = courseStore
@@ -32,16 +29,10 @@ function getCoursePosition(item: CourseModel) {
 </script>
 
 <template>
-  <div
-    class="overflow-y-scroll relative dark:bg-#121212"
-    :style="{ 'height': `calc(100vh - ${appStore.customBarHeight}px)`, 'padding-top': `${appStore.customBarHeight}px` }"
-  >
-    <div
-      class="bg-white w-full top-0 z-10 fixed dark:bg-#121212"
-      :style="{ 'padding-top': `${appStore.customBarHeight}px` }"
-    >
-      <TimetableAction :show-course-action="showCourseAction" />
-      <TimetableHeader />
+  <div class="overflow-y-scroll relative dark:bg-#121212" :style="{ height: `calc(100vh - ${customBarHeight}px)` }">
+    <div class="bg-white w-full top-0 z-10 fixed dark:bg-#121212" :style="{ 'padding-top': `${customBarHeight}px` }">
+      <UTimetableAction :show-course-action="showCourseAction" />
+      <UTimetableHeader />
     </div>
     <div
       class="bg-white min-h-max pb-safe grid grid-flow-col p-1 transition-all z-20 gap-1 grid-rows-10 grid-cols-[0.7fr_repeat(7,1fr)] duration-300 dark:bg-#121212"
