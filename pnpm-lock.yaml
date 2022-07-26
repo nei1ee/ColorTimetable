@@ -18,10 +18,10 @@ specifiers:
   pinia: ^2.0.14
   typescript: ^4.7.4
   unocss: ^0.41.1
+  unocss-preset-uni: ^0.1.6
   unplugin-auto-import: ^0.9.1
   vite: ^2.9.12
   vite-plugin-inspect: ^0.5.0
-  vite-plugin-unocss-to-uni: 0.0.16
   vue: ^3.2.37
   vue-demi: ^0.13.1
 
@@ -47,10 +47,10 @@ devDependencies:
   eslint: 8.18.0
   typescript: 4.7.4
   unocss: 0.41.1_vite@2.9.12
+  unocss-preset-uni: 0.1.6
   unplugin-auto-import: 0.9.1_vite@2.9.12
   vite: 2.9.12
   vite-plugin-inspect: 0.5.0_vite@2.9.12
-  vite-plugin-unocss-to-uni: 0.0.16
 
 packages:
 
@@ -1080,6 +1080,10 @@ packages:
     resolution: {integrity: sha512-Y+ZpUZ1hED0Xz86Y2nuBRtd3G0Oij9iAqQm3XNMBW6h+cMUznR8VKFvDGqE2r0ag9fv5soAZb8/RjMlTeHwrDQ==}
     dev: true
 
+  /@unocss/core/0.44.2:
+    resolution: {integrity: sha512-u1P/IMU8axudO1Tao+Ow9fNyufcZvAnjAcCbRVFQH3grQGJwoqAgMyJDh4EZqpR/Xz8H8a43cNjIbBsa4BwBGQ==}
+    dev: true
+
   /@unocss/inspector/0.41.1:
     resolution: {integrity: sha512-SC4RItSY4iGWR2gqOcpmdpjSds1AQxsFKPWg7qGOlz0UIELrcu7lg8HEpFmwsYdg+N0XdWTqpLWutrBNVqLkfA==}
     dependencies:
@@ -1107,6 +1111,12 @@ packages:
     resolution: {integrity: sha512-UybylcC4AHPcFNF2BfXh7ThdUK/cQcVqR+0oilaiTqCnqTbeV6hdtabY6c6B2Ye0+MbYPr8r9TJeTo2P1i/oHw==}
     dependencies:
       '@unocss/core': 0.41.1
+    dev: true
+
+  /@unocss/preset-mini/0.44.2:
+    resolution: {integrity: sha512-tbuArrrW5vP25EnRj8MHRJYIjZRsNukmgWtSpiHHmsE6/2eDo5T00NSO5eQQIwtrlxM8j2qFjnZUV/FEZ/SMhg==}
+    dependencies:
+      '@unocss/core': 0.44.2
     dev: true
 
   /@unocss/preset-tagify/0.41.1:
@@ -1141,6 +1151,13 @@ packages:
     dependencies:
       '@unocss/core': 0.41.1
       '@unocss/preset-mini': 0.41.1
+    dev: true
+
+  /@unocss/preset-wind/0.44.2:
+    resolution: {integrity: sha512-L1n38IlT7bFXK99Jbswdk4bwLUHSmmIIM+4VVHwOKLNAwq5k59JaQ+odJAoyoThxbRKWN0mlpmXCaWlgZsYTbA==}
+    dependencies:
+      '@unocss/core': 0.44.2
+      '@unocss/preset-mini': 0.44.2
     dev: true
 
   /@unocss/reset/0.41.1:
@@ -4256,6 +4273,16 @@ packages:
     resolution: {integrity: sha512-hAZsKq7Yy11Zu1DE0OzWjw7nnLZmJZYTDZZyEFHZdUhV8FkH5MCfoU1XMaxXovpyW5nq5scPqq0ZDP9Zyl04oQ==}
     engines: {node: '>= 10.0.0'}
 
+  /unocss-preset-uni/0.1.6:
+    resolution: {integrity: sha512-6EFJYuIt47QraPdslucPBWLnvAtbc9Kq/HYpDaRQoYicuqO9HJRUqSnVld/NOdcErfmmh2O5pKvulUp5Iyp65g==}
+    dependencies:
+      '@unocss/core': 0.44.2
+      '@unocss/preset-mini': 0.44.2
+      '@unocss/preset-wind': 0.44.2
+      '@vue/compiler-sfc': 3.2.37
+      magic-string: 0.26.2
+    dev: true
+
   /unocss/0.41.1_vite@2.9.12:
     resolution: {integrity: sha512-tsc/4Xw3Z6t4pda0KmEK2+XayZYgLhPypZHWfPjQofTWzkm43c+k3PO5vS72jEVorE8rK0VDcoRSvhKGvC5lww==}
     engines: {node: '>=14'}
@@ -4380,13 +4407,6 @@ packages:
       vite: 2.9.12
     transitivePeerDependencies:
       - supports-color
-    dev: true
-
-  /vite-plugin-unocss-to-uni/0.0.16:
-    resolution: {integrity: sha512-nf+fOroqf+lReflK2L84kODoJKfV/VQQv1tIHD4dPxGotKcEtdU92zP6COo/4eelF+ZmRBJOeL9BRygdZwU9Ew==}
-    dependencies:
-      '@vue/compiler-sfc': 3.2.37
-      magic-string: 0.26.2
     dev: true
 
   /vite/2.9.12:
