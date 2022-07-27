@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import TimetableAction from './TimetableAction.vue'
+import TimetableHeader from './TimetableHeader.vue'
 import type { CourseModel } from '~/stores/course'
 import { courseTimeList } from '~/stores/course'
 
@@ -11,9 +13,8 @@ withDefaults(
 const emit = defineEmits(['courseItemClick'])
 
 const { customBarHeight } = useAppStore()
-const courseStore = useCourseStore()
-
-const { hasConflictCourseByMap } = courseStore
+const { weekCourseList } = storeToRefs(useCourseStore())
+const { hasConflictCourseByMap } = useCourseStore()
 
 /**
  * get course position
@@ -31,11 +32,11 @@ function getCoursePosition(item: CourseModel) {
 <template>
   <div class="overflow-y-scroll relative dark:bg-#121212" :style="{ height: `calc(100vh - ${customBarHeight}px)` }">
     <div class="bg-white w-full top-0 z-10 fixed dark:bg-#121212" :style="{ 'padding-top': `${customBarHeight}px` }">
-      <UTimetableAction :show-course-action="showCourseAction" />
-      <UTimetableHeader />
+      <TimetableAction :show-course-action="showCourseAction" />
+      <TimetableHeader />
     </div>
     <div
-      class="bg-white min-h-max pb-safe grid grid-flow-col p-1 transition-all z-20 gap-1 grid-rows-10 grid-cols-[0.7fr_repeat(7,1fr)] duration-300 dark:bg-#121212"
+      class="min-h-max pb-safe grid grid-flow-col p-1 transition-all z-20 gap-1 grid-rows-10 grid-cols-[0.7fr_repeat(7,1fr)] duration-300"
       :class="showCourseAction ? 'pt-30' : 'pt-10'"
     >
       <template v-for="(courseTime, courseIndex) in courseTimeList" :key="courseIndex">
@@ -48,9 +49,9 @@ function getCoursePosition(item: CourseModel) {
           </div>
         </div>
       </template>
-      <template v-for="(courseItem, courseIndex) of courseStore.weekCourseList" :key="courseIndex">
+      <template v-for="(courseItem, _courseIndex) of weekCourseList" :key="_courseIndex">
         <div
-          class="border-white rounded-lg border-2 border-opacity-50 text-center p-1 col-span-1 relative box-content"
+          class="border-white rounded-lg border-2 border-opacity-70 text-center p-1 col-span-1 relative"
           :style="[getCoursePosition(courseItem), `background-color: ${hasConflictCourseByMap(courseItem)[0].bgColor}`]"
           @click="emit('courseItemClick', courseItem)"
         >

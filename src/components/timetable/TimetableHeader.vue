@@ -1,13 +1,7 @@
 <script setup lang="ts">
 import { weekTitle } from '~/stores/course'
 
-const {
-  currentMonth,
-  originalWeekIndex,
-  currentWeekIndex,
-  originalWeekWeekIndex,
-  currentWeekDayArray,
-} = storeToRefs(useCourseStore())
+const { currentMonth, originalWeekIndex, currentWeekIndex, originalWeekWeekIndex, currentWeekDayArray } = storeToRefs(useCourseStore())
 </script>
 
 <template>

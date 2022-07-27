@@ -158,7 +158,7 @@ function handleConfirmTimeActionSheet() {
 </script>
 
 <template>
-  <BasePage>
+  <UBasePage>
     <div class="overflow-y-scroll" :style="{ height: `calc(100vh - ${appStore.customBarHeight}px)` }">
       <div class="bg-white mb-4 py-1 justify-center items-start dark:bg-#121212">
         <div class="px-4">
@@ -307,6 +307,6 @@ function handleConfirmTimeActionSheet() {
         @click="showTimeActionSheet = false"
       />
     </div>
-  </BasePage>
+  </UBasePage>
 </template>
 

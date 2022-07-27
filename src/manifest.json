@@ -11,8 +11,7 @@
       "urlCheck": false,
       "es6": true,
       "minified": true,
-      "uglifyFileName": false,
-      "minifyWXML": true
+      "postcss": true
     },
     "usingComponents": true,
     "darkmode": true

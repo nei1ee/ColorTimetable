@@ -17,7 +17,7 @@
   "easycom": {
     "autoscan": true,
     "custom": {
-      "^U(.*)": "~/components/timetable/U$1.vue"
+      "^U(.*)": "~/components/UnoUI/U$1/U$1.vue"
     }
   }
 }

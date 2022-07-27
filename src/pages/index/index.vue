@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { CourseModel } from '~/stores/course'
+import CourseActionSheet from '~/components/timetable/CourseActionSheet.vue'
+import TimetableContent from '~/components/timetable/TimetableContent.vue'
 
 const { customBarHeight, statusBarHeight } = useAppStore()
 const { setPageConfig } = usePageStore()
@@ -46,7 +48,7 @@ function handleCloseActionSheet() {
 </script>
 
 <template>
-  <BasePage>
+  <UBasePage>
     <div
       class="bg-light-blue-500 text-white w-full top-0 z-200 fixed dark:bg-light-blue-600"
       :style="{ height: `${customBarHeight}px` }"
@@ -68,13 +70,13 @@ function handleCloseActionSheet() {
       </div>
     </div>
     <!-- timetable main content -->
-    <UTimetableContent :show-course-action="showCourseAction" @course-item-click="handleShowActionSheet" />
+    <TimetableContent :show-course-action="showCourseAction" @course-item-click="handleShowActionSheet" />
     <!-- course card -->
-    <UCourseActionSheet
+    <CourseActionSheet
       :show-action-sheet="showActionSheet" :course-item="clickedCourseItem"
       @cancel="handleCloseActionSheet"
     />
-  </BasePage>
+  </UBasePage>
 </template>
 
 <style scoped>
