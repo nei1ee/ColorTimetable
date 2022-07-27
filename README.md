@@ -26,50 +26,30 @@
 - 🦾 TypeScript 的类型检查
 
 
-## 预配置
-
-### UI 框架
-
-- [UnoCSS](https://github.com/antfu/unocss) - 高性能且极具灵活性的即时原子化 CSS 引擎
-
-### Icons
-
-- [Iconify](https://iconify.design) - 使用任意的图标集，浏览：[🔍Icônes](https://icones.netlify.app/)
-- [UnoCSS 的纯 CSS 图标方案](https://github.com/antfu/unocss/tree/main/packages/preset-icons)
-
-### 插件
-
-- [`unplugin-auto-import`](https://github.com/antfu/unplugin-auto-import) - 直接使用 Composition API 等，无需导入
-- [`vite-plugin-unocss-to-uni`](https://github.com/zguolee/vite-plugin-unocss-to-uni) - UnoCSS 到 UniApp 的转换器
-
-<br>
-
-
-## Install and use
+## 使用
 
 [uni-app 项目支持 vue 3.0 介绍，及升级指南](https://ask.dcloud.net.cn/article/37834)
 
-- Get the project code
+- 拉取代码
 
 ```
 git clone https://github.com/zguolee/ColorTimetable.git
 ```
 
-- Installation dependencies
+- 安装依赖
   
 ```
 cd ColorTimetable
-
 pnpm install
 ```
 
-- Run
+- 运行
 
 ```
 pnpm run dev:mp-weixin
 ```
 
-- Build
+- 发行
 
 ```
 pnpm run build:mp-weixin
@@ -85,8 +65,6 @@ pnpm run build:mp-weixin
 #### Changed
 * **Change course data structure**
 * Change the course card display method
-
-<br>
 
 ### Version 2.0.0
 #### Features
