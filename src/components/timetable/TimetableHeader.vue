@@ -1,7 +1,17 @@
 <script setup lang="ts">
 import { weekTitle } from '~/stores/course'
 
-const { currentMonth, originalWeekIndex, currentWeekIndex, originalWeekWeekIndex, currentWeekDayArray } = storeToRefs(useCourseStore())
+const {
+  currentMonth, originalWeekIndex, currentWeekIndex,
+  originalWeekWeekIndex, currentWeekDayArray,
+} = storeToRefs(useCourseStore())
+
+const isCurrentWeek = (weekIndex: number) => {
+  if (!originalWeekIndex || !currentWeekIndex || !originalWeekWeekIndex)
+    return false
+
+  return originalWeekIndex.value === currentWeekIndex.value && originalWeekWeekIndex.value === weekIndex
+}
 </script>
 
 <template>
@@ -12,7 +22,7 @@ const { currentMonth, originalWeekIndex, currentWeekIndex, originalWeekWeekIndex
     <div
       v-for="(item, index) in currentWeekDayArray" :key="index"
       class="border-y-transparent border-x-none flex flex-col border-t-4 border-b-4 text-xs transition-all duration-300 justify-evenly items-center"
-      :class="originalWeekIndex === currentWeekIndex && originalWeekWeekIndex === index ? 'bg-light-blue-200 !border-b-light-blue-500 dark:bg-opacity-50' : ''"
+      :class="isCurrentWeek(index) ? 'bg-light-blue-200 !border-b-light-blue-500 dark:bg-opacity-50' : ''"
     >
       <p class="font-medium">
         {{ weekTitle[index] }}

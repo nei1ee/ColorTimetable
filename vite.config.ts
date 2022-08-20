@@ -1,8 +1,7 @@
 import path from 'path'
 import { defineConfig } from 'vite'
 import uni from '@dcloudio/vite-plugin-uni'
-import Unocss from 'unocss/vite'
-import { UnoCSSToUni } from 'unocss-preset-uni/vite'
+import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 
 // https://vitejs.dev/config/
@@ -18,10 +17,7 @@ export default defineConfig({
 
     // https://github.com/antfu/unocss
     // see unocss.config.ts for config
-    Unocss(),
-
-    // https://github.com/zguolee/unocss-preset-uni
-    UnoCSSToUni(),
+    UnoCSS(),
 
     // https://github.com/antfu/unplugin-auto-import
     AutoImport({

@@ -159,7 +159,7 @@ function handleConfirmTimeActionSheet() {
 
 <template>
   <UBasePage>
-    <div class="overflow-y-scroll" :style="{ height: `calc(100vh - ${appStore.customBarHeight}px)` }">
+    <div>
       <div class="bg-white mb-4 py-1 justify-center items-start dark:bg-#121212">
         <div class="px-4">
           <div class="text-lg">
@@ -178,7 +178,7 @@ function handleConfirmTimeActionSheet() {
         <div class="bg-white flex flex-col mb-4 py-1 gap-2 justify-center dark:bg-#121212">
           <div class="flex px-4 justify-between items-center">
             <div class="text-lg">
-              {{ `时间段${courseList.length > 1 ? courseIndex + 1 : ''}` }}
+              {{ `时间段${courseIndex + 1}` }}
             </div>
             <div class="text-red-500 i-carbon-delete" @click="handleDeleteCourseItem(courseIndex)" />
           </div>

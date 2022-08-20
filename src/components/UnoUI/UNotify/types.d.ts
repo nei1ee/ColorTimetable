@@ -1,7 +1,7 @@
-export type UNotifyType = 'default' | 'success' | 'danger' | 'warning' | 'primary'
+export type UNotifyType = 'default' | 'success' | 'error' | 'warning' | 'primary'
 
 export interface UNotifyOptions {
   type?: UNotifyType
-  msg: string
+  message: string
   duration?: number
 }

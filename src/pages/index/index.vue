@@ -50,7 +50,7 @@ function handleCloseActionSheet() {
 <template>
   <UBasePage>
     <div
-      class="bg-light-blue-500 text-white w-full top-0 z-200 fixed dark:bg-light-blue-600"
+      class="bg-light-blue-500 text-white w-full top-0 z-200 fixed dark:bg-light-blue-600 font-bold"
       :style="{ height: `${customBarHeight}px` }"
     >
       <div :style="{ 'padding-top': `${statusBarHeight}px`, 'height': `${customBarHeight - statusBarHeight}px` }">

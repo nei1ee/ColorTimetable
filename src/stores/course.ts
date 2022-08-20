@@ -40,7 +40,7 @@ export const useCourseStore = defineStore(
     const currentMonth = ref<number>(0)
     const originalWeekIndex = ref<number>(0)
     const currentWeekIndex = ref<number>(0)
-    const originalWeekWeekIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1
+    const originalWeekWeekIndex = ref<number>((new Date().getDay()) === 0 ? 6 : (new Date().getDay()) - 1)
     const colorArrayIndex = ref<number>(0)
 
     /**

@@ -9,11 +9,11 @@ const notifyType = ref<UNotifyType>('default')
 const message = ref('')
 
 const handleShowNotify = (options: UNotifyOptions) => {
-  const { type = 'default', msg = 'Unable to connect to the server.', duration = 2000 } = options
+  const { type = 'default', message: _message = 'Unable to connect to the server.', duration = 2000 } = options
   clearTimeout(timer.value)
   show.value = true
   notifyType.value = type
-  message.value = msg
+  message.value = _message
   timer.value = setTimeout(() => {
     show.value = false
     clearTimeout(timer.value)
@@ -28,7 +28,7 @@ defineExpose({
 const bgColor = {
   default: 'bg-gray-5',
   success: 'bg-green-5',
-  danger: 'bg-red-5',
+  error: 'bg-red-5',
   warning: 'bg-orange-5',
   primary: 'bg-blue-5',
 }

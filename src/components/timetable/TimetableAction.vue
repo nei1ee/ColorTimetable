@@ -1,17 +1,17 @@
 <script setup lang="ts">
 const props = defineProps<{ showCourseAction: boolean }>()
 
-const courseStore = useCourseStore()
+const { parsedCourseList, originalWeekIndex, currentWeekIndex } = storeToRefs(useCourseStore())
 
-const { originalWeekIndex, currentWeekIndex } = toRefs(courseStore)
+const { setCurrentWeekIndex } = useCourseStore()
 
 const scrollTo = ref('week0')
 
 watch(
-  () => +props.showCourseAction + courseStore.currentWeekIndex,
+  () => +props.showCourseAction + currentWeekIndex.value,
   () => {
     if (props.showCourseAction)
-      scrollTo.value = `week${courseStore.currentWeekIndex - 1}`
+      scrollTo.value = `week${currentWeekIndex.value - 1}`
   })
 </script>
 
@@ -22,11 +22,11 @@ watch(
     scroll-x scroll-with-animation
     :scroll-into-view="scrollTo"
   >
-    <template v-for="(weeksTimetable, weeksIndex) of courseStore.parsedCourseList" :key="weeksIndex">
+    <template v-for="(weeksTimetable, weeksIndex) of parsedCourseList" :key="weeksIndex">
       <div
         :id="`week${weeksIndex + 1}`"
         class="text-center py-1 px-2 inline-block"
-        @click="courseStore.setCurrentWeekIndex(weeksIndex)"
+        @click="setCurrentWeekIndex(weeksIndex)"
       >
         <div
           class="rounded-lg py-1 px-2 dark:bg-opacity-50"
@@ -38,7 +38,7 @@ watch(
           <div class="h-10 grid grid-flow-col w-10 grid-cols-5 grid-rows-5">
             <template v-for="(weekWeekTimetable, weekWeekIndex) of weeksTimetable" :key="weekWeekIndex">
               <template v-if="weekWeekIndex < 5">
-                <template v-for="(item, index) of weekWeekTimetable" :key="index">
+                <template v-for="(item, _idx) of weekWeekTimetable" :key="_idx">
                   <div
                     class="rounded-full mx-auto bg-gray-100 h-1.5 w-1.5"
                     :class="item ? '!bg-light-blue-500' : ''"
