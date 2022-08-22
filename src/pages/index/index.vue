@@ -5,7 +5,8 @@ import TimetableContent from '~/components/timetable/TimetableContent.vue'
 
 const { customBarHeight, statusBarHeight } = useAppStore()
 const { setPageConfig } = usePageStore()
-const courseStore = useCourseStore()
+const { currentWeekIndex, isStart } = storeToRefs(useCourseStore())
+const { setCourseList, setStartDay } = useCourseStore()
 
 onShow(() => {
   setPageConfig({ showNavBar: false })
@@ -16,7 +17,7 @@ uni.request({
   url: 'https://www.fastmock.site/mock/7074538d5f28bc8bcab58385107d778f/api/course',
   success: (res: any) => {
     // set semester course data
-    courseStore.setCourseList(res.data.data as CourseModel[])
+    setCourseList(res.data.data as CourseModel[])
   },
 })
 
@@ -25,8 +26,8 @@ const showCourseAction = ref(false)
 // set the start date
 const someDate = new Date()
 // ` - 8 * 7 + (someDate.getDay() + 1) % 7` just to fix the current week
-someDate.setDate(someDate.getDate() - 8 * 7 + (someDate.getDay() + 1) % 7)
-courseStore.setStartDay(someDate)
+someDate.setDate(someDate.getDate() + 8 * 7 + (someDate.getDay() + 1) % 7)
+setStartDay(someDate)
 
 function handleCreateCourse() {
   uni.navigateTo({
@@ -57,10 +58,10 @@ function handleCloseActionSheet() {
         <div class="h-full text-center px-6 relative">
           <div class="h-full text-xl left-4 i-carbon-add absolute" @click="handleCreateCourse" />
           <div
-            class="flex h-full mx-auto w-20 justify-center items-center inline-block text-lg"
+            class="flex h-full mx-auto justify-center items-center inline-block text-lg"
             @click="showCourseAction = !showCourseAction"
           >
-            {{ `第${courseStore.currentWeekIndex + 1}周` }}
+            {{ `第${currentWeekIndex + 1}周${!isStart ? '(未开学)' : ''}` }}
             <div
               class="transition-transform duration-300 i-carbon-chevron-up"
               :class="showCourseAction ? 'rotate-180' : 'rotate-0'"

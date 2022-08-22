@@ -34,6 +34,7 @@ const conflictCourseMap = new Map<CourseModel, CourseModel[]>()
 export const useCourseStore = defineStore(
   'course',
   () => {
+    const isStart = ref<boolean>(false)
     const startDate = ref<Date | string>(new Date())
     const weekNum = ref<number>(20)
     const courseList = ref<CourseModel[]>([])
@@ -42,6 +43,32 @@ export const useCourseStore = defineStore(
     const currentWeekIndex = ref<number>(0)
     const originalWeekWeekIndex = ref<number>((new Date().getDay()) === 0 ? 6 : (new Date().getDay()) - 1)
     const colorArrayIndex = ref<number>(0)
+
+    /**
+     * set start date
+     * @param someDate the start date of the semester
+     */
+    function setStartDay(someDate: string | Date) {
+      startDate.value = new Date(someDate)
+      const days = new Date().getTime() - startDate.value.getTime()
+      isStart.value = days > 0
+      const week = Math.floor(days / (1000 * 60 * 60 * 24 * 7))
+      originalWeekIndex.value = week < 0 ? 0 : week
+      setCurrentWeekIndex(originalWeekIndex.value)
+    }
+
+    /**
+     * change current week index
+     * @param weekIndex the new week index
+     */
+    function setCurrentWeekIndex(weekIndex: number) {
+      conflictCourseMap.clear()
+      currentWeekIndex.value = weekIndex
+      // change current month
+      const someDate = new Date(startDate.value)
+      someDate.setDate(someDate.getDate() + weekIndex * 7)
+      currentMonth.value = someDate.getMonth() + 1
+    }
 
     /**
      * init course list
@@ -120,32 +147,6 @@ export const useCourseStore = defineStore(
     }
 
     /**
-     * set start date
-     * @param someDate the start date of the semester
-     */
-    function setStartDay(someDate: string | Date) {
-      startDate.value = new Date(someDate)
-      // set original week index
-      const days = new Date().getTime() - startDate.value.getTime()
-      originalWeekIndex.value = Math.floor((days / (1000 * 60 * 60 * 24)) / 7)
-      // set current week index
-      setCurrentWeekIndex(originalWeekIndex.value)
-    }
-
-    /**
-     * change current week index
-     * @param weekIndex the new week index
-     */
-    function setCurrentWeekIndex(weekIndex: number) {
-      conflictCourseMap.clear()
-      currentWeekIndex.value = weekIndex
-      // change current month
-      const someDate = new Date(startDate.value)
-      someDate.setDate(someDate.getDate() + weekIndex * 7)
-      currentMonth.value = someDate.getMonth() + 1
-    }
-
-    /**
      * reset course bg color
      */
     function resetCourseBgColor() {
@@ -212,6 +213,7 @@ export const useCourseStore = defineStore(
     }
 
     return {
+      isStart,
       startDate,
       currentMonth,
       courseList,

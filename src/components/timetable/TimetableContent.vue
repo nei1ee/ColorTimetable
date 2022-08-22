@@ -36,7 +36,7 @@ function getCoursePosition(item: CourseModel) {
       <TimetableHeader />
     </div>
     <div
-      class="min-h-max pb-safe grid grid-flow-col p-0.5 transition-all z-20 gap-0.5 grid-rows-10 grid-cols-[0.7fr_repeat(7,1fr)] duration-300 bg-white dark:bg-#121212"
+      class="min-h-max pb-safe grid grid-flow-col p-1 transition-all z-20 gap-1 grid-rows-10 grid-cols-[0.7fr_repeat(7,1fr)] duration-300 bg-white dark:bg-#121212"
       :class="showCourseAction ? 'pt-31' : 'pt-11'"
     >
       <template v-for="(courseTime, courseIndex) in courseTimeList" :key="courseIndex">
@@ -51,7 +51,7 @@ function getCoursePosition(item: CourseModel) {
       </template>
       <template v-for="(courseItem, _courseIndex) of weekCourseList" :key="_courseIndex">
         <div
-          class="border-white rounded-lg border-2 border-opacity-70 text-center p-0.5 relative"
+          class="border-white rounded-lg border-1 border-opacity-70 text-center p-0.5 relative"
           :style="[getCoursePosition(courseItem), `background-color: ${hasConflictCourseByMap(courseItem)[0].bgColor}`]"
           @click="emit('courseItemClick', courseItem)"
         >
@@ -65,7 +65,7 @@ function getCoursePosition(item: CourseModel) {
             </div>
             <div
               v-if="hasConflictCourseByMap(courseItem).length > 1"
-              class="bg-white rounded h-1.5 top-1 right-1 w-1.5 absolute"
+              class="rounded h-1 top-1 left-1 right-1 absolute bg-white/80"
             />
           </div>
         </div>

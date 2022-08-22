@@ -2,12 +2,14 @@
 import { weekTitle } from '~/stores/course'
 
 const {
-  currentMonth, originalWeekIndex, currentWeekIndex,
+  isStart, currentMonth, originalWeekIndex, currentWeekIndex,
   originalWeekWeekIndex, currentWeekDayArray,
 } = storeToRefs(useCourseStore())
 
 const isCurrentWeek = (weekIndex: number) => {
-  if (!originalWeekIndex || !currentWeekIndex || !originalWeekWeekIndex)
+  if (!isStart.value)
+    return false
+  if (!originalWeekIndex.value || !currentWeekIndex.value || !originalWeekWeekIndex.value)
     return false
 
   return originalWeekIndex.value === currentWeekIndex.value && originalWeekWeekIndex.value === weekIndex
