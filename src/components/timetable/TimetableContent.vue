@@ -13,8 +13,40 @@ withDefaults(
 const emit = defineEmits(['courseItemClick'])
 
 const { customBarHeight } = storeToRefs(useAppStore())
-const { weekCourseList } = storeToRefs(useCourseStore())
-const { hasConflictCourseByMap } = useCourseStore()
+const { weekCourseList, currentWeekIndex, originalWeekIndex } = storeToRefs(useCourseStore())
+const { hasConflictCourseByMap, setCurrentWeekIndex } = useCourseStore()
+
+const startX = ref(0)
+const startY = ref(0)
+const towardsX = ref(0)
+const towardsY = ref(0)
+
+function handleTouchStart(e: TouchEvent) {
+  startX.value = e.touches[0].clientX
+  startY.value = e.touches[0].clientY
+}
+
+function handleTouchMove(e: TouchEvent) {
+  towardsX.value = e.touches[0].clientX - startX.value
+  towardsY.value = e.touches[0].clientY - startY.value
+}
+
+function handleTouchEnd() {
+  let currentWeekIndexTemp = currentWeekIndex.value
+  if (towardsX.value === 0 || Math.abs(towardsY.value) > 50)
+    return
+  if (towardsX.value > 50) {
+    if (currentWeekIndexTemp === 0)
+      return
+    currentWeekIndexTemp--
+  }
+  else if (towardsX.value < -50) {
+    if (currentWeekIndexTemp === weekCourseList.value.length - 1)
+      return
+    currentWeekIndexTemp++
+  }
+  setCurrentWeekIndex(currentWeekIndexTemp)
+}
 
 /**
  * get course position
@@ -38,6 +70,7 @@ function getCoursePosition(item: CourseModel) {
     <div
       class="min-h-max pb-safe grid grid-flow-col p-1 transition-all z-20 gap-1 grid-rows-10 grid-cols-[0.7fr_repeat(7,1fr)] duration-300 bg-white dark:bg-#121212"
       :class="showCourseAction ? 'pt-31' : 'pt-11'"
+      @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd"
     >
       <template v-for="(courseTime, courseIndex) in courseTimeList" :key="courseIndex">
         <div class="flex flex-col text-sm min-h-18 justify-evenly items-center">
@@ -70,6 +103,13 @@ function getCoursePosition(item: CourseModel) {
           </div>
         </div>
       </template>
+    </div>
+    <div
+      class="bg-light-blue dark:bg-light-blue-600 text-white text-sm fixed top-40% z-30 pl-4 py-2 pr-2 rounded-l-full transition-all duration-300"
+      :class="originalWeekIndex !== currentWeekIndex ? 'right-0' : '-right-full'"
+      @click="setCurrentWeekIndex(originalWeekIndex)"
+    >
+      返回本周
     </div>
   </div>
 </template>

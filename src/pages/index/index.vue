@@ -25,8 +25,7 @@ const showCourseAction = ref(false)
 
 // set the start date
 const someDate = new Date()
-// ` - 8 * 7 + (someDate.getDay() + 1) % 7` just to fix the current week
-someDate.setDate(someDate.getDate() + 8 * 7 + (someDate.getDay() + 1) % 7)
+someDate.setDate(someDate.getDate() + 1 * 7)
 setStartDay(someDate)
 
 function handleCreateCourse() {

@@ -81,9 +81,11 @@ export const useCourseStore = defineStore(
     }
 
     // current week course list
-    const weekCourseList = computed(
-      () => courseList.value && courseList.value.filter(item => item.weeks.includes(currentWeekIndex.value + 1)),
-    )
+    const weekCourseList = computed(() => {
+      if (courseList.value)
+        return courseList.value.filter(item => item.weeks.includes(currentWeekIndex.value + 1))
+      return []
+    })
 
     // data for course action
     const parsedCourseList = computed(() => {
