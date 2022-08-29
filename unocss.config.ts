@@ -1,11 +1,35 @@
+import type { Preset, SourceCodeTransformer } from 'unocss'
 import {
   defineConfig,
+  presetAttributify,
   presetIcons,
+  presetUno,
   presetWebFonts,
   transformerDirectives,
+  transformerVariantGroup,
 } from 'unocss'
 
-import { presetApplet, presetRemToRpx, transformerRenameClass } from 'unocss-applet'
+import {
+  presetApplet,
+  presetRemToRpx,
+  transformerApplet,
+  transformerAttributify,
+} from 'unocss-applet'
+
+const presets: Preset[] = []
+const transformers: SourceCodeTransformer[] = []
+
+if (process.env.UNI_PLATFORM === 'h5') {
+  presets.push(presetUno())
+  // presets.push(presetAttributify())
+}
+else {
+  presets.push(presetApplet())
+  presets.push(presetRemToRpx())
+
+  transformers.push(transformerAttributify())
+  transformers.push(transformerApplet())
+}
 
 export default defineConfig({
   shortcuts: {
@@ -17,8 +41,6 @@ export default defineConfig({
     'bg-primary': 'bg-light-blue-500 dark:bg-light-blue-600',
   },
   presets: [
-    presetApplet({ enableApplet: !(process.env.UNI_PLATFORM === 'h5') }),
-    presetRemToRpx(),
     presetIcons({
       scale: 1.2,
       warn: true,
@@ -34,10 +56,14 @@ export default defineConfig({
         mono: 'Noto Sans Mono',
       },
     }),
+    // add here to enable unocss attributify mode prompt although preset is not working
+    presetAttributify(),
+    ...presets,
   ],
   transformers: [
-    transformerRenameClass({ enableRename: !(process.env.UNI_PLATFORM === 'h5') }),
     transformerDirectives(),
+    transformerVariantGroup(),
+    ...transformers,
   ],
   rules: [
     ['p-safe', { padding: 'env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)' }],
