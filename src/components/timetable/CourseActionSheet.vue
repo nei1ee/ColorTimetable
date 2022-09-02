@@ -14,6 +14,12 @@ const emit = defineEmits(['cancel'])
 const courseStore = useCourseStore()
 
 const courseList = computed(() => courseStore.getConflictCourse(props.courseItem))
+const courseTime = computed(() => getCourseTime(courseList.value[0]))
+
+function getCourseTime(item: CourseModel) {
+  const { week, start, duration } = item
+  return `星期${weekTitle[week - 1]} 第${start}-${start + duration - 1}节`
+}
 
 function navigateToDetail(courseItem: CourseModel) {
   closeActionSheet()
@@ -30,14 +36,12 @@ function closeActionSheet() {
 <template>
   <div @touchmove.prevent>
     <div
-      class="bg-white w-full min-h-10 transition-all ease-in-out z-100 duration-300 fixed dark:bg-#121212"
+      class="bg-base w-full min-h-10 transition-all ease-in-out z-100 duration-300 fixed"
       :class="showActionSheet && courseList?.length ? 'bottom-0' : '-bottom-full'"
     >
       <div class="flex flex-col py-6 gap-6">
         <div v-if="courseList?.length" class="font-medium text-xl px-4">
-          {{ `星期${weekTitle[courseList[0].week - 1]} 第${courseList[0].start}-${courseList[0].start
-            + courseList[0].duration - 1}节`
-          }}
+          {{ courseTime }}
         </div>
         <template v-for="(courseItem, index) of courseList" :key="index">
           <div
@@ -47,12 +51,15 @@ function closeActionSheet() {
             <div class="flex mb-1 w-full gap-2 justify-start items-center relative">
               <div
                 class="rounded-full h-5 transition-background-color w-1 duration-300 inline-block"
-                :style="[`background-color: ${courseItem.bgColor}`]"
+                :class="[courseItem.color[0]]"
               />
               <div class="font-medium text-lg">
                 {{ courseItem.title }}
               </div>
-              <div class="text-xl top-0 right-4 bottom-0 z-20 absolute" :class="index ? 'i-carbon-up-to-top' : ''" @click.stop="courseStore.setCourseItemTop(courseItem)" />
+              <div
+                class="text-xl top-0 right-4 bottom-0 z-20 absolute" :class="index ? 'i-carbon-up-to-top' : ''"
+                @click.stop="courseStore.setCourseItemTop(courseItem)"
+              />
             </div>
             <div class="flex gap-1 justify-start items-center">
               <div class="i-carbon-location" />
@@ -60,13 +67,15 @@ function closeActionSheet() {
             </div>
             <div class="flex gap-1 justify-start items-center">
               <div class="i-carbon-alarm" />
-              {{ `星期${weekTitle[courseItem.week - 1]} 第${courseItem.start}-${courseItem.start + courseItem.duration - 1}节` }}
+              {{ getCourseTime(courseItem) }}
             </div>
           </div>
         </template>
       </div>
       <div
-        class="flex pb-safe border-t-4 border-gray-200 h-12 text-center text-lg justify-center items-center dark:border-opacity-20"
+        class="flex pb-safe h-12"
+        text="center lg dark:!white"
+        b="t-4 gray-200 dark:op-20" justify-center items-center
         hover-class="bg-gray-200 bg-opacity-50" :hover-stay-time="150" @click="closeActionSheet"
       >
         关闭

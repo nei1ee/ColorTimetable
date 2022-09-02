@@ -13,13 +13,36 @@ withDefaults(
 const emit = defineEmits(['courseItemClick'])
 
 const { customBarHeight } = storeToRefs(useAppStore())
-const { weekCourseList, currentWeekIndex, originalWeekIndex } = storeToRefs(useCourseStore())
+const { weekNum, weekCourseList, currentWeekIndex, originalWeekIndex } = storeToRefs(useCourseStore())
 const { hasConflictCourseByMap, setCurrentWeekIndex } = useCourseStore()
+
+// delete a course when course at the same time
+const deleteWeekCourse = computed(() => {
+  const weekCourse = Array.from(weekCourseList.value)
+  if (weekCourse.length <= 1)
+    return weekCourse
+  for (let i = 1; i < weekCourse.length; i++) {
+    const { start, week } = weekCourse[i]
+    const { start: prevStart, week: prevWeek } = weekCourse[i - 1]
+    if (start === prevStart && week === prevWeek) {
+      weekCourse.splice(i, 1)
+      i--
+    }
+  }
+  return weekCourse
+})
 
 const startX = ref(0)
 const startY = ref(0)
 const towardsX = ref(0)
 const towardsY = ref(0)
+
+function resetTouchStatus() {
+  startX.value = 0
+  startY.value = 0
+  towardsX.value = 0
+  towardsY.value = 0
+}
 
 function handleTouchStart(e: TouchEvent) {
   startX.value = e.touches[0].clientX
@@ -41,11 +64,12 @@ function handleTouchEnd() {
     currentWeekIndexTemp--
   }
   else if (towardsX.value < -50) {
-    if (currentWeekIndexTemp === weekCourseList.value.length - 1)
+    if (currentWeekIndexTemp === weekNum.value - 1)
       return
     currentWeekIndexTemp++
   }
   setCurrentWeekIndex(currentWeekIndexTemp)
+  resetTouchStatus()
 }
 
 /**
@@ -62,33 +86,33 @@ function getCoursePosition(item: CourseModel) {
 </script>
 
 <template>
-  <div class="overflow-y-scroll relative dark:bg-#121212" :style="{ height: `calc(100vh - ${customBarHeight}px)` }">
-    <div class="bg-white w-full top-0 z-10 fixed dark:bg-#121212" :style="{ 'padding-top': `${customBarHeight}px` }">
+  <div class="overflow-y-scroll relative bg-base" :style="{ height: `calc(100vh - ${customBarHeight}px)` }">
+    <div class="w-full top-0 z-10 fixed bg-base" :style="{ 'padding-top': `${customBarHeight}px` }">
       <TimetableAction :show-course-action="showCourseAction" />
       <TimetableHeader />
     </div>
     <div
-      class="min-h-max pb-safe grid grid-flow-col p-1 transition-all z-20 gap-1 grid-rows-10 grid-cols-[0.7fr_repeat(7,1fr)] duration-300 bg-white dark:bg-#121212"
-      :class="showCourseAction ? 'pt-31' : 'pt-11'"
+      class="min-h-max pb-safe p-1 transition-all z-20 duration-300 bg-base"
+      grid="~ flow-col rows-10 cols-[0.7fr_repeat(7,1fr)] gap-1" :class="showCourseAction ? 'pt-31' : 'pt-11'"
       @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd"
     >
       <template v-for="(courseTime, courseIndex) in courseTimeList" :key="courseIndex">
-        <div class="flex flex-col text-sm min-h-18 justify-evenly items-center">
+        <div class="text-sm min-h-18" flex="~ col" justify-evenly items-center>
           <div class="font-medium">
             {{ courseIndex + 1 }}
           </div>
-          <div class="leading-tight px-0.5 text-8px">
+          <div class="px-0.5 text-8px">
             {{ courseTime.s }}<br>{{ courseTime.e }}
           </div>
         </div>
       </template>
-      <template v-for="(courseItem, _courseIndex) of weekCourseList" :key="_courseIndex">
+      <template v-for="(courseItem, _courseIndex) of deleteWeekCourse" :key="_courseIndex">
         <div
-          class="border-white rounded-lg border-1 border-opacity-70 text-center p-0.5 relative"
-          :style="[getCoursePosition(courseItem), `background-color: ${hasConflictCourseByMap(courseItem)[0].bgColor}`]"
+          class="rounded-lg p-0.5 relative dark:bg-op40" b="white 2 !op-50"
+          :class="[...hasConflictCourseByMap(courseItem)[0].color]" :style="[getCoursePosition(courseItem)]"
           @click="emit('courseItemClick', courseItem)"
         >
-          <div class="flex flex-col h-full text-white text-xs w-full justify-around items-center">
+          <div class="h-full w-full" text="center white xs" flex="~ col" justify-around items-center>
             <div class="font-medium break-all">
               {{ hasConflictCourseByMap(courseItem)[0].title }}
             </div>
@@ -105,7 +129,9 @@ function getCoursePosition(item: CourseModel) {
       </template>
     </div>
     <div
-      class="bg-light-blue dark:bg-light-blue-600 text-white text-sm fixed top-40% z-30 pl-4 py-2 pr-2 rounded-l-full transition-all duration-300"
+      class="bg-primary fixed top-40% z-30 rounded-l-full transition-all duration-300"
+      text="white sm"
+      p="l-4 y-2 r-2"
       :class="originalWeekIndex !== currentWeekIndex ? 'right-0' : '-right-full'"
       @click="setCurrentWeekIndex(originalWeekIndex)"
     >

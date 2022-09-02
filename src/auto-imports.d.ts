@@ -3,7 +3,7 @@ export {}
 declare global {
   const EffectScope: typeof import('vue')['EffectScope']
   const acceptHMRUpdate: typeof import('pinia')['acceptHMRUpdate']
-  const colorArrayList: typeof import('./stores/course')['colorArrayList']
+  const colorList: typeof import('./stores/course')['colorList']
   const computed: typeof import('vue')['computed']
   const courseTimeList: typeof import('./stores/course')['courseTimeList']
   const createApp: typeof import('vue')['createApp']
@@ -104,7 +104,7 @@ declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
-    readonly colorArrayList: UnwrapRef<typeof import('./stores/course')['colorArrayList']>
+    readonly colorList: UnwrapRef<typeof import('./stores/course')['colorList']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly courseTimeList: UnwrapRef<typeof import('./stores/course')['courseTimeList']>
     readonly createApp: UnwrapRef<typeof import('vue')['createApp']>

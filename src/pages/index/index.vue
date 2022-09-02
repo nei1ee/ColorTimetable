@@ -25,7 +25,7 @@ const showCourseAction = ref(false)
 
 // set the start date
 const someDate = new Date()
-someDate.setDate(someDate.getDate() + 1 * 7)
+someDate.setDate(someDate.getDate() + -1 * 7)
 setStartDay(someDate)
 
 function handleCreateCourse() {
@@ -50,7 +50,7 @@ function handleCloseActionSheet() {
 <template>
   <UBasePage>
     <div
-      class="bg-light-blue-500 text-white w-full top-0 z-200 fixed dark:bg-light-blue-600 font-bold"
+      class="bg-primary text-white w-full top-0 z-200 fixed font-bold"
       :style="{ height: `${customBarHeight}px` }"
     >
       <div :style="{ 'padding-top': `${statusBarHeight}px`, 'height': `${customBarHeight - statusBarHeight}px` }">

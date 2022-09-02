@@ -17,14 +17,16 @@ const isCurrentWeek = (weekIndex: number) => {
 </script>
 
 <template>
-  <div class="h-10 shadow-sm grid px-1 top-0 gap-1 grid-cols-[0.7fr_repeat(7,1fr)]">
+  <div class="h-10 shadow-sm px-1 top-0" grid="~ cols-[0.7fr_repeat(7,1fr)] gap-1">
     <div class="flex font-medium text-sm items-center justify-center">
       {{ `${currentMonth}月` }}
     </div>
     <div
       v-for="(item, index) in currentWeekDayArray" :key="index"
-      class="border-y-transparent border-x-none flex flex-col border-t-4 border-b-4 text-xs transition-all duration-300 justify-evenly items-center"
-      :class="isCurrentWeek(index) ? 'bg-light-blue-200 !border-b-light-blue-500 dark:bg-opacity-50' : ''"
+      class="text-xs transition-all duration-300 !bg-op40"
+      flex="~ col" justify-evenly items-center
+      b="y-transparent x-none t-4 b-4"
+      :class="isCurrentWeek(index) ? 'bg-light-blue-300 !b-b-light-blue-500' : ''"
     >
       <p class="font-medium">
         {{ weekTitle[index] }}

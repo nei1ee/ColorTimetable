@@ -1,3 +1,4 @@
+import { shuffle } from 'lodash-es'
 import { pinia } from '~/modules/pinia'
 
 export interface CourseModel {
@@ -9,7 +10,7 @@ export interface CourseModel {
   week: number
   // [[1-20]]
   weeks: number[]
-  bgColor?: string
+  color: string[]
 }
 
 export const weekTitle = ['一', '二', '三', '四', '五', '六', '日']
@@ -22,12 +23,18 @@ export const courseTimeList = [
   { s: '19:00', e: '19:50' }, { s: '19:55', e: '20:45' },
 ]
 
-const colorMap = new Map<string, string>()
+const colorMap = new Map<string, string[]>()
 
-export const colorArrayList = [
-  ['#FFDC72', '#CE7CF4', '#FF7171', '#66CC99', '#FF9966', '#66CCCC', '#6699CC', '#99CC99', '#669966', '#66CCFF', '#99CC66', '#FF9999', '#81CC74'],
-  ['#99CCFF', '#FFCC99', '#CCCCFF', '#99CCCC', '#A1D699', '#7397db', '#ff9983', '#87D7EB', '#99CC99'],
-]
+// @unocss-include
+export const colorList = [
+  [
+    ['bg-rose', 'b-rose-6'], ['bg-pink', 'b-pink-6'], ['bg-fuchsia', 'b-fuchsia-6'], ['bg-purple', 'b-purple-6'],
+    ['bg-violet', 'b-violet-6'], ['bg-indigo', 'b-indigo-6'], ['bg-blue', 'b-blue-6'],
+    ['bg-cyan', 'b-cyan-6'], ['bg-teal', 'b-teal-6'], ['bg-emerald', 'b-emerald-6'], ['bg-green', 'b-green-6'],
+    ['bg-lime', 'b-lime-6'], ['bg-yellow', 'b-yellow-6'], ['bg-amber', 'b-amber-6'], ['bg-orange', 'b-orange-6'],
+    ['bg-red', 'b-red-6'],
+  ],
+].map(color => shuffle(color))
 
 const conflictCourseMap = new Map<CourseModel, CourseModel[]>()
 
@@ -76,7 +83,8 @@ export const useCourseStore = defineStore(
      */
     function setCourseList(newCourseList: CourseModel[]) {
       conflictCourseMap.clear()
-      courseList.value = newCourseList
+      // sort by week and start
+      courseList.value = newCourseList.sort((a, b) => a.week - b.week || a.start - b.start)
       resetCourseBgColor()
     }
 
@@ -155,22 +163,22 @@ export const useCourseStore = defineStore(
       colorMap.clear()
       if (courseList.value) {
         courseList.value.map(courseItem =>
-          Object.assign(courseItem, { bgColor: getCourseBgColor(courseItem) }),
+          Object.assign(courseItem, { color: getCourseColor(courseItem) }),
         )
       }
     }
 
     /**
-     * get course item background color
+     * get course item color
      * @param courseItem course item
      * @returns course color
      */
-    function getCourseBgColor(courseItem: CourseModel): string {
-      const colorArray = colorArrayList[colorArrayIndex.value]
+    function getCourseColor(courseItem: CourseModel): string[] {
+      const colorArray = colorList[colorArrayIndex.value]
       const { title } = courseItem
       if (!colorMap.has(title))
         colorMap.set(title, colorArray[colorMap.size % colorArray.length])
-      return colorMap.get(title) || '#FFFFFF'
+      return colorMap.get(title) || ['bg-white', 'b-white']
     }
 
     watch(
@@ -217,6 +225,7 @@ export const useCourseStore = defineStore(
     return {
       isStart,
       startDate,
+      weekNum,
       currentMonth,
       courseList,
       setCourseList,
