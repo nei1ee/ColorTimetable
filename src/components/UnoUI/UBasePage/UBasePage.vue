@@ -17,7 +17,8 @@ onMounted(() => {
   _notifyRef.value = notifyRef.value
   _toastRef.value = toastRef.value
 })
-onHide(() => pageReset())
+
+onUnmounted(() => pageReset())
 </script>
 
 <template>

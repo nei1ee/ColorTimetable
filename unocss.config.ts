@@ -1,10 +1,7 @@
-import type { Preset, SourceCodeTransformer } from 'unocss'
 import {
   defineConfig,
   presetAttributify,
   presetIcons,
-  presetUno,
-  presetWebFonts,
   transformerDirectives,
   transformerVariantGroup,
 } from 'unocss'
@@ -16,24 +13,9 @@ import {
   transformerAttributify,
 } from 'unocss-applet'
 
-const presets: Preset[] = []
-const transformers: SourceCodeTransformer[] = []
+const isH5 = process.env.UNI_PLATFORM === 'h5'
 
-function isH5Platform() {
-  return process.env.UNI_PLATFORM === 'h5'
-}
-
-if (isH5Platform()) {
-  presets.push(presetUno())
-  // presets.push(presetAttributify())
-}
-else {
-  presets.push(presetApplet())
-  presets.push(presetRemToRpx())
-
-  transformers.push(transformerAttributify())
-  transformers.push(transformerApplet())
-}
+const courseColors = ['rose', 'pink', 'fuchsia', 'purple', 'violet', 'indigo', 'blue', 'cyan', 'teal', 'emerald', 'green', 'lime', 'yellow', 'amber', 'orange', 'red']
 
 export default defineConfig({
   shortcuts: {
@@ -53,24 +35,35 @@ export default defineConfig({
         'vertical-align': 'middle',
       },
     }),
-    presetWebFonts({
-      fonts: {
-        sans: 'Noto Sans',
-        serif: 'Noto Serif',
-        mono: 'Noto Sans Mono',
-      },
-    }),
+    /**
+     * you can add `presetAttributify()` here to enable unocss attributify mode prompt
+     * although preset is not working for applet, but will generate useless css
+     */
+    presetApplet({ enable: !isH5 }),
     presetAttributify(),
-    ...presets,
+    presetRemToRpx({ enable: !isH5 }),
   ],
   transformers: [
     transformerDirectives(),
     transformerVariantGroup(),
-    ...transformers,
+    // Don't change the following order
+    transformerAttributify(),
+    transformerApplet(),
   ],
   rules: [
-    ['p-safe', { padding: 'env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)' }],
+    [
+      'p-safe',
+      {
+        padding:
+          'env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)',
+      },
+    ],
     ['pt-safe', { 'padding-top': 'env(safe-area-inset-top)' }],
     ['pb-safe', { 'padding-bottom': 'env(safe-area-inset-bottom)' }],
+  ],
+  safelist: [
+    ...courseColors.map(c => `bg-${c}`),
+    ...courseColors.map(c => `bg-${c}-3`),
+    ...courseColors.map(c => `text-${c}-5`),
   ],
 })

@@ -36,23 +36,17 @@ function closeActionSheet() {
 <template>
   <div @touchmove.prevent>
     <div
-      class="bg-base w-full min-h-10 transition-all ease-in-out z-100 duration-300 fixed"
+      class="bg-base w-full min-h-10 z-100 fixed" transition="all duration-300 ease-in-out"
       :class="showActionSheet && courseList?.length ? 'bottom-0' : '-bottom-full'"
     >
-      <div class="flex flex-col py-6 gap-6">
+      <div class="py-6" flex="~ col gap6">
         <div v-if="courseList?.length" class="font-medium text-xl px-4">
           {{ courseTime }}
         </div>
         <template v-for="(courseItem, index) of courseList" :key="index">
-          <div
-            class="flex flex-col px-4 gap-2"
-            @click="navigateToDetail(courseItem)"
-          >
+          <div class="px-4" flex="~ col gap-2" @click="navigateToDetail(courseItem)">
             <div class="flex mb-1 w-full gap-2 justify-start items-center relative">
-              <div
-                class="rounded-full h-5 transition-background-color w-1 duration-300 inline-block"
-                :class="[courseItem.color[0]]"
-              />
+              <div class="rounded-full h-5 w-1 inline-block" :style="`background-color:${courseItem.color}`" />
               <div class="font-medium text-lg">
                 {{ courseItem.title }}
               </div>
@@ -73,10 +67,8 @@ function closeActionSheet() {
         </template>
       </div>
       <div
-        class="flex pb-safe h-12"
-        text="center lg dark:!white"
-        b="t-4 gray-200 dark:op-20" justify-center items-center
-        hover-class="bg-gray-200 bg-opacity-50" :hover-stay-time="150" @click="closeActionSheet"
+        class="flex pb-safe h-12" text="center lg dark:!white" b="t-4 gray-200 dark:op-20" justify-center
+        items-center hover-class="bg-gray-200 bg-opacity-50" :hover-stay-time="150" @click="closeActionSheet"
       >
         关闭
       </div>

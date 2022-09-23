@@ -9,22 +9,14 @@
 <br>
 
 ## 特性
+
 - 🗓  可视化周选择、课程删除/置顶、课程详情卡片
 
 - ⚡️ [Vue 3](https://github.com/vuejs/vue-next), [Vite 2](https://github.com/vitejs/vite), [pnpm](https://pnpm.js.org/), [ESBuild](https://github.com/evanw/esbuild) - 就是快！
 
-- 🍍 [使用 Pinia 的状态管理](https://pinia.esm.dev/)
-
-- 🎨 [UnoCSS](https://github.com/unocss/unocss) - 高性能且极具灵活性的即时原子化 CSS 引擎
-
-- 😃 [各种图标集为你所用](https://github.com/antfu/unocss/tree/main/packages/preset-icons)
-
 - 🔥 使用 [新的 `<script setup>` 语法](https://github.com/vuejs/rfcs/pull/227)
 
-- 📥 [API 自动加载](https://github.com/antfu/unplugin-auto-import) - 直接使用 Composition API 无需引入
-
 - 🦾 TypeScript 的类型检查
-
 
 ## 使用
 
@@ -32,50 +24,52 @@
 
 - 拉取代码
 
-```
+```bash
 git clone https://github.com/zguolee/ColorTimetable.git
 ```
 
 - 安装依赖
   
-```
+```bash
 cd ColorTimetable
 pnpm install
 ```
 
 - 运行
 
-```
+```bash
 pnpm run dev:mp-weixin
 ```
 
 - 发行
 
-```
+```bash
 pnpm run build:mp-weixin
 ```
-
 
 ## Change Log
 
 ### Version 2.1.0
+
 #### Features
-* Add a page to add and edit course
+
+- Add a page to add and edit course
 
 #### Changed
-* **Change course data structure**
-* Change the course card display method
+
+- **Change course data structure**
+- Change the course card display method
 
 ### Version 2.0.0
-#### Features
-* Update from Vue2 to Vue3
-* Dark theme
 
+#### Features
+
+- Update from Vue2 to Vue3
+- Dark theme
 
 ### Version 1.x
 
 [ColorTimetable Vue2](https://github.com/zguolee/ColorTimetable/tree/vue2)
-
 
 ## License
 

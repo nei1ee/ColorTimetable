@@ -27,7 +27,7 @@ defineExpose({
 
 const bgColor = {
   default: 'bg-gray-5',
-  success: 'bg-green-5',
+  success: 'bg-green-4',
   error: 'bg-red-5',
   warning: 'bg-orange-5',
   primary: 'bg-blue-5',
@@ -36,7 +36,7 @@ const bgColor = {
 
 <template>
   <div
-    class="flex h-8 text-white w-full py-1 px-2 transition-all z-100 duration-500 justify-center items-center fixed shadow"
+    class="flex h-8 text-white w-full py-1 px-2 transition-all z-100 justify-center items-center fixed"
     :class="bgColor[notifyType]"
     :style="{ top: show ? `${customBarHeight}px` : '-100%' }"
   >

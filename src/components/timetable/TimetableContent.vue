@@ -109,7 +109,7 @@ function getCoursePosition(item: CourseModel) {
       <template v-for="(courseItem, _courseIndex) of deleteWeekCourse" :key="_courseIndex">
         <div
           class="rounded-lg p-0.5 relative dark:bg-op40" b="white 2 !op-50"
-          :class="[...hasConflictCourseByMap(courseItem)[0].color]" :style="[getCoursePosition(courseItem)]"
+          :style="[getCoursePosition(courseItem), `background-color:${hasConflictCourseByMap(courseItem)[0].color}`]"
           @click="emit('courseItemClick', courseItem)"
         >
           <div class="h-full w-full" text="center white xs" flex="~ col" justify-around items-center>

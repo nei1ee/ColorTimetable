@@ -37,7 +37,7 @@ const ToastClass = {
 <template>
   <div
     v-if="show"
-    class="z-100 fixed flex justify-center items-center top-0 left-0 right-0 bottom-0"
+    class="z-100 fixed flex justify-center items-center top-0 bottom-0 left-0 right-0"
   >
     <div
       class="flex justify-center items-center py-2 px-4 rounded-lg border animate-fade-in-up animate-duration-200 text-white"
