@@ -2,6 +2,7 @@
 import type { CourseModel } from '~/stores/course'
 import CourseActionSheet from '~/components/timetable/CourseActionSheet.vue'
 import TimetableContent from '~/components/timetable/TimetableContent.vue'
+import courses from '~/static/courses'
 
 const { customBarHeight, statusBarHeight } = useAppStore()
 const { setPageConfig } = usePageStore()
@@ -12,14 +13,7 @@ onShow(() => {
   setPageConfig({ showNavBar: false })
 })
 
-// mock api
-uni.request({
-  url: 'https://www.fastmock.site/mock/7074538d5f28bc8bcab58385107d778f/api/course',
-  success: (res: any) => {
-    // set semester course data
-    setCourseList(res.data.data as CourseModel[])
-  },
-})
+setCourseList(courses as CourseModel[])
 
 const showCourseAction = ref(false)
 
